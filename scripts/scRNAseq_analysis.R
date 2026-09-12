@@ -1,6 +1,6 @@
 #===========================================
 library(Seurat)
-sc_data <- Read10X(data.dir = "/Users/Technology - Laptoop/Downloads/GSE234832_RAW/BRBMET2/")
+sc_data <- Read10X(data.dir = "D:/oza/GSE234832_RAW/BRBMET2/")
 
 BRBMET2_seurat <- CreateSeuratObject(
   counts = sc_data,
@@ -76,7 +76,7 @@ VlnPlot(
 BRBMET2_filtered <- subset(BRBMET2_filtered, subset = doublet_class == "singlet")
 #===========================================
 library(Seurat)
-sc_data <- Read10X(data.dir = "/Users/Technology - Laptoop/Downloads/GSE234832_RAW/BRBMET3/")
+sc_data <- Read10X(data.dir = "D:/oza/GSE234832_RAW/BRBMET3/")
 BRBMET3_seurat <- CreateSeuratObject(counts = sc_data, project = "BRBMET3")
 BRBMET3_seurat[["percent.mt"]] <- PercentageFeatureSet(
   BRBMET3_seurat,
@@ -148,7 +148,7 @@ VlnPlot(
 BRBMET3_filtered <- subset(BRBMET3_filtered, subset = doublet_class == "singlet")
 #===========================================
 library(Seurat)
-sc_data <- Read10X(data.dir = "/Users/Technology - Laptoop/Downloads/GSE234832_RAW/BRBMET87/")
+sc_data <- Read10X(data.dir = "D:/oza/GSE234832_RAW/BRBMET87/")
 
 BRBMET87_seurat <- CreateSeuratObject(
   counts = sc_data,
@@ -225,7 +225,7 @@ VlnPlot(
 BRBMET87_filtered <- subset(BRBMET87_filtered, subset = doublet_class == "singlet")
 #===========================================
 library(Seurat)
-sc_data <- Read10X(data.dir = "/Users/Technology - Laptoop/Downloads/GSE234832_RAW/LUBMET1/")
+sc_data <- Read10X(data.dir = "D:/oza/GSE234832_RAW/LUBMET1/")
 
 LUBMET1_seurat <- CreateSeuratObject(
   counts = sc_data,
@@ -304,7 +304,7 @@ VlnPlot(
 LUBMET1_filtered <- subset(LUBMET1_filtered, subset = doublet_class == "singlet")
 #===========================================
 library(Seurat)
-sc_data <- Read10X(data.dir = "/Users/Technology - Laptoop/Downloads/GSE234832_RAW/LUBMET7/")
+sc_data <- Read10X(data.dir = "D:/oza/GSE234832_RAW/LUBMET7/")
 
 LUBMET7_seurat <- CreateSeuratObject(
   counts = sc_data,
@@ -417,3 +417,87 @@ merged_seurat <- ScaleData(
   merged_seurat,
   features = VariableFeatures(merged_seurat)
 )
+# Run PCA on the scaled data
+merged_seurat <- RunPCA(
+  merged_seurat,
+  features = VariableFeatures(merged_seurat)
+)
+print(merged_seurat[["pca"]], dims = 1:5, nfeatures = 5)
+# Visualize loadings for the top PCs
+VizDimLoadings(merged_seurat, dims = 1:2, reduction = "pca")
+
+# PCA scatter plot (PC1 vs PC2)
+DimPlot(merged_seurat, reduction = "pca")
+
+# Heatmap to explore heterogeneity within a PC
+DimHeatmap(merged_seurat, dims = 1, cells = 500, balanced = TRUE)
+
+# Determine how many PCs to use downstream (elbow plot)
+ElbowPlot(merged_seurat, ndims = 50)
+# ============================
+#integration across samples using Harmony
+# ============================
+library(harmony)
+merged_seurat <- RunHarmony(
+  merged_seurat,
+  group.by.vars = "orig.ident",
+  dims.use = 1:30,
+  theta = 4  )
+
+# ============================
+# Step: Clustering & UMAP
+# (Finding cell groups + 2D visualization based on top 30 PCs)
+# ============================
+merged_seurat <- FindNeighbors(merged_seurat, reduction = "harmony", dims = 1:30)
+merged_seurat <- FindClusters(merged_seurat, resolution = 0.5)
+
+merged_seurat <- RunUMAP(merged_seurat, reduction = "harmony", dims = 1:30)
+DimPlot(merged_seurat, reduction = "umap", label = TRUE)
+
+DimPlot(merged_seurat, reduction = "umap", group.by = "orig.ident")
+
+merged_seurat[["RNA"]] <- JoinLayers(merged_seurat[["RNA"]])
+
+#====================================================
+
+# Find marker genes for each cluster
+markers <- FindAllMarkers(
+  merged_seurat,
+  only.pos = TRUE,
+  min.pct = 0.25,
+  logfc.threshold = 0.25
+)
+
+# Top markers per cluster
+library(dplyr)
+top_markers <- markers %>%
+  group_by(cluster) %>%
+  slice_max(order_by = avg_log2FC, n = 5)
+
+top_markers
+#============================================
+#Sub-clustering the Fibroblasts population (cluster 7)
+fibroblasts <- subset(merged_seurat, idents = "7")
+
+fibroblasts <- FindVariableFeatures(fibroblasts)
+fibroblasts <- ScaleData(fibroblasts)
+fibroblasts <- RunPCA(fibroblasts)
+fibroblasts <- FindNeighbors(fibroblasts, dims = 1:15)
+fibroblasts <- FindClusters(fibroblasts, resolution = 0.3)
+fibroblasts <- RunUMAP(fibroblasts, dims = 1:15)
+
+DimPlot(fibroblasts, label = TRUE)
+
+fibro_markers <- FindAllMarkers(
+  fibroblasts,
+  only.pos = TRUE,
+  min.pct = 0.25,
+  logfc.threshold = 0.25
+)
+
+fibro_top_markers <- fibro_markers %>%
+  group_by(cluster) %>%
+  slice_max(order_by = avg_log2FC, n = 10)
+
+fibro_top_markers
+#==================================================
