@@ -91,7 +91,7 @@ VlnPlot(
 # Remove doublets
 BRBMET2_filtered <- subset(BRBMET2_filtered, subset = doublet_class == "singlet")
 #===========================================
-# # SAMPLE 2 . BRBMET3
+# SAMPLE 2 . BRBMET3
 #===========================================
 # Load and Create Seurat Object
 library(Seurat)
@@ -180,7 +180,7 @@ VlnPlot(
 # Remove doublets
 BRBMET3_filtered <- subset(BRBMET3_filtered, subset = doublet_class == "singlet")
 #===========================================
-# # SAMPLE 3 . BRBMET87
+# SAMPLE 3 . BRBMET87
 #===========================================
 # Load and Create Seurat Object
 library(Seurat)
