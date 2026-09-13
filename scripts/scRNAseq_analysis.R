@@ -3,7 +3,7 @@
 #===========================================
 # Load and Create Seurat Object
 library(Seurat)
-sc_data <- Read10X(data.dir = "D:/oza/GSE234832_RAW/BRBMET2/")
+sc_data <- Read10X(data.dir = "/Users/Technology - Laptoop/Downloads/GSE234832_RAW/BRBMET2/")
 
 BRBMET2_seurat <- CreateSeuratObject(
   counts = sc_data,
@@ -95,12 +95,8 @@ BRBMET2_filtered <- subset(BRBMET2_filtered, subset = doublet_class == "singlet"
 #===========================================
 # Load and Create Seurat Object
 library(Seurat)
-<<<<<<< HEAD
-sc_data <- Read10X(data.dir = "D:/oza/GSE234832_RAW/BRBMET3/")
-=======
 sc_data <- Read10X(data.dir = "/Users/Technology - Laptoop/Downloads/GSE234832_RAW/BRBMET3/")
 
->>>>>>> c674430aadbe4f49bc0ec6caa234b8819bfb73a2
 BRBMET3_seurat <- CreateSeuratObject(counts = sc_data, project = "BRBMET3")
 
 # Calculate Mitochondrial Percentage
@@ -188,7 +184,7 @@ BRBMET3_filtered <- subset(BRBMET3_filtered, subset = doublet_class == "singlet"
 #===========================================
 # Load and Create Seurat Object
 library(Seurat)
-sc_data <- Read10X(data.dir = "D:/oza/GSE234832_RAW/BRBMET87/")
+sc_data <- Read10X(data.dir = "/Users/Technology - Laptoop/Downloads/GSE234832_RAW/BRBMET87/")
 
 BRBMET87_seurat <- CreateSeuratObject(
   counts = sc_data,
@@ -280,7 +276,7 @@ BRBMET87_filtered <- subset(BRBMET87_filtered, subset = doublet_class == "single
 #===========================================
 # Load and Create Seurat Object
 library(Seurat)
-sc_data <- Read10X(data.dir = "D:/oza/GSE234832_RAW/LUBMET1/")
+sc_data <- Read10X(data.dir = "/Users/Technology - Laptoop/Downloads/GSE234832_RAW/LUBMET1/")
 
 LUBMET1_seurat <- CreateSeuratObject(
   counts = sc_data,
@@ -373,7 +369,7 @@ LUBMET1_filtered <- subset(LUBMET1_filtered, subset = doublet_class == "singlet"
 #===========================================
 # Load and Create Seurat Object
 library(Seurat)
-sc_data <- Read10X(data.dir = "D:/oza/GSE234832_RAW/LUBMET7/")
+sc_data <- Read10X(data.dir = "/Users/Technology - Laptoop/Downloads/GSE234832_RAW/LUBMET7/")
 
 LUBMET7_seurat <- CreateSeuratObject(
   counts = sc_data,
