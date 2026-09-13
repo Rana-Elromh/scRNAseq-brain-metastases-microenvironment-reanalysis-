@@ -1,8 +1,9 @@
 #===========================================
+# SAMPLE 1 . BRBMET2
+#===========================================
 # Load and Create Seurat Object
-
 library(Seurat)
-sc_data <- Read10X(data.dir = "D:/oza/GSE234832_RAW/BRBMET2/")
+sc_data <- Read10X(data.dir = "/Users/Technology - Laptoop/Downloads/GSE234832_RAW/BRBMET2/")
 
 BRBMET2_seurat <- CreateSeuratObject(
   counts = sc_data,
@@ -10,14 +11,12 @@ BRBMET2_seurat <- CreateSeuratObject(
 )
 
 # Calculate Mitochondrial Percentage
-
 BRBMET2_seurat[["percent.mt"]] <- PercentageFeatureSet(
   BRBMET2_seurat,
   pattern = "^MT-"
 )
 
 # Visualize QC metrics
-
 VlnPlot(
   BRBMET2_seurat,
   features = c("nFeature_RNA", "nCount_RNA", "percent.mt"),
@@ -25,7 +24,6 @@ VlnPlot(
 )
 
 # Generate QC scatter plots
-
 FeatureScatter(
   BRBMET2_seurat,
   feature1 = "nCount_RNA",
@@ -38,7 +36,6 @@ FeatureScatter(
 )
 
 # Filter low-quality cells
-
 BRBMET2_filtered <- subset(
   BRBMET2_seurat,
   subset =
@@ -48,7 +45,6 @@ BRBMET2_filtered <- subset(
 )
 
 # Visualize QC metrics after filtering
-
 VlnPlot(
   BRBMET2_filtered,
   features = c("nFeature_RNA", "nCount_RNA", "percent.mt"),
@@ -56,7 +52,6 @@ VlnPlot(
 )
 
 # Detect doublets
-
 library(scDblFinder)
 library(SingleCellExperiment)
 sce_d1 <- as.SingleCellExperiment(BRBMET2_filtered)
@@ -64,7 +59,6 @@ set.seed(100)
 sce_d1 <- scDblFinder(sce_d1)
 
 # Add doublet scores and classifications
-
 BRBMET2_filtered$doublet_score <-
   colData(sce_d1)$scDblFinder.score
 
@@ -72,11 +66,9 @@ BRBMET2_filtered$doublet_class <-
   colData(sce_d1)$scDblFinder.class
 
 # Summarize doublet classifications
-
 table(BRBMET2_filtered$doublet_class)
 
 # Visualize doublet scores
-
 library(ggplot2)
 ggplot(BRBMET2_filtered@meta.data,
        aes(x = nCount_RNA,
@@ -90,7 +82,6 @@ ggplot(BRBMET2_filtered@meta.data,
   theme_classic()
 
 # Visualize doublet score by classification
-
 VlnPlot(
   BRBMET2_filtered,
   features = "doublet_score",
@@ -98,29 +89,23 @@ VlnPlot(
 )
 
 # Remove doublets
-
 BRBMET2_filtered <- subset(BRBMET2_filtered, subset = doublet_class == "singlet")
 #===========================================
+# SAMPLE 2 . BRBMET3
+#===========================================
 # Load and Create Seurat Object
-
 library(Seurat)
-<<<<<<< HEAD
-sc_data <- Read10X(data.dir = "D:/oza/GSE234832_RAW/BRBMET3/")
-=======
 sc_data <- Read10X(data.dir = "/Users/Technology - Laptoop/Downloads/GSE234832_RAW/BRBMET3/")
 
->>>>>>> c674430aadbe4f49bc0ec6caa234b8819bfb73a2
 BRBMET3_seurat <- CreateSeuratObject(counts = sc_data, project = "BRBMET3")
 
 # Calculate Mitochondrial Percentage
-
 BRBMET3_seurat[["percent.mt"]] <- PercentageFeatureSet(
   BRBMET3_seurat,
   pattern = "^MT-"
 )
 
 # Visualize QC metrics
-
 VlnPlot(
   BRBMET3_seurat,
   features = c("nFeature_RNA", "nCount_RNA", "percent.mt"),
@@ -128,7 +113,6 @@ VlnPlot(
 )
 
 # Generate QC scatter plots
-
 FeatureScatter(
   BRBMET3_seurat,
   feature1 = "nCount_RNA",
@@ -141,7 +125,6 @@ FeatureScatter(
 )
 
 # Filter low-quality cells
-
 BRBMET3_filtered <- subset(
   BRBMET3_seurat,
   subset =
@@ -151,7 +134,6 @@ BRBMET3_filtered <- subset(
 )
 
 # Visualize QC metrics after filtering
-
 VlnPlot(
   BRBMET3_filtered,
   features = c("nFeature_RNA", "nCount_RNA", "percent.mt"),
@@ -159,7 +141,6 @@ VlnPlot(
 )
 
 # Detect doublets
-
 library(scDblFinder)
 library(SingleCellExperiment)
 sce_d1 <- as.SingleCellExperiment(BRBMET3_filtered)
@@ -167,7 +148,6 @@ set.seed(100)
 sce_d1 <- scDblFinder(sce_d1)
 
 # Add doublet scores and classifications
-
 BRBMET3_filtered$doublet_score <-
   colData(sce_d1)$scDblFinder.score
 
@@ -175,11 +155,9 @@ BRBMET3_filtered$doublet_class <-
   colData(sce_d1)$scDblFinder.class
 
 # Summarize doublet classifications
-
 table(BRBMET3_filtered$doublet_class)
 
 # Visualize doublet scores
-
 library(ggplot2)
 ggplot(BRBMET3_filtered@meta.data,
        aes(x = nCount_RNA,
@@ -193,7 +171,6 @@ ggplot(BRBMET3_filtered@meta.data,
   theme_classic()
 
 # Visualize doublet score by classification
-
 VlnPlot(
   BRBMET3_filtered,
   features = "doublet_score",
@@ -201,13 +178,13 @@ VlnPlot(
 )
 
 # Remove doublets
-
 BRBMET3_filtered <- subset(BRBMET3_filtered, subset = doublet_class == "singlet")
 #===========================================
+# SAMPLE 3 . BRBMET87
+#===========================================
 # Load and Create Seurat Object
-
 library(Seurat)
-sc_data <- Read10X(data.dir = "D:/oza/GSE234832_RAW/BRBMET87/")
+sc_data <- Read10X(data.dir = "/Users/Technology - Laptoop/Downloads/GSE234832_RAW/BRBMET87/")
 
 BRBMET87_seurat <- CreateSeuratObject(
   counts = sc_data,
@@ -215,14 +192,12 @@ BRBMET87_seurat <- CreateSeuratObject(
 )
 
 # Calculate mitochondrial percentage
-
 BRBMET87_seurat[["percent.mt"]] <- PercentageFeatureSet(
   BRBMET87_seurat,
   pattern = "^MT-"
 )
 
 # Visualize QC metrics
-
 VlnPlot(
   BRBMET87_seurat,
   features = c("nFeature_RNA", "nCount_RNA", "percent.mt"),
@@ -230,7 +205,6 @@ VlnPlot(
 )
 
 # Generate QC scatter plots
-
 FeatureScatter(
   BRBMET87_seurat,
   feature1 = "nCount_RNA",
@@ -243,7 +217,6 @@ FeatureScatter(
 )
 
 # Filter low-quality cells
-
 BRBMET87_filtered <- subset(
   BRBMET87_seurat,
   subset =
@@ -253,7 +226,6 @@ BRBMET87_filtered <- subset(
 )
 
 # Visualize QC metrics after filtering
-
 VlnPlot(
   BRBMET87_filtered,
   features = c("nFeature_RNA", "nCount_RNA", "percent.mt"),
@@ -261,7 +233,6 @@ VlnPlot(
 )
 
 # Detect doublets
-
 library(scDblFinder)
 library(SingleCellExperiment)
 sce_d1 <- as.SingleCellExperiment(BRBMET87_filtered)
@@ -269,7 +240,6 @@ set.seed(100)
 sce_d1 <- scDblFinder(sce_d1)
 
 # Add doublet scores and classifications
-
 BRBMET87_filtered$doublet_score <-
   colData(sce_d1)$scDblFinder.score
 
@@ -277,11 +247,9 @@ BRBMET87_filtered$doublet_class <-
   colData(sce_d1)$scDblFinder.class
 
 # Summarize doublet classifications
-
 table(BRBMET87_filtered$doublet_class)
 
 # Visualize doublet scores
-
 library(ggplot2)
 ggplot(BRBMET87_filtered@meta.data,
        aes(x = nCount_RNA,
@@ -295,7 +263,6 @@ ggplot(BRBMET87_filtered@meta.data,
   theme_classic()
 
 # Visualize doublet score by classification
-
 VlnPlot(
   BRBMET87_filtered,
   features = "doublet_score",
@@ -303,13 +270,13 @@ VlnPlot(
 )
 
 # Remove doublets
-
 BRBMET87_filtered <- subset(BRBMET87_filtered, subset = doublet_class == "singlet")
 #===========================================
+# SAMPLE 4 . LUBMET1
+#===========================================
 # Load and Create Seurat Object
-
 library(Seurat)
-sc_data <- Read10X(data.dir = "D:/oza/GSE234832_RAW/LUBMET1/")
+sc_data <- Read10X(data.dir = "/Users/Technology - Laptoop/Downloads/GSE234832_RAW/LUBMET1/")
 
 LUBMET1_seurat <- CreateSeuratObject(
   counts = sc_data,
@@ -317,14 +284,12 @@ LUBMET1_seurat <- CreateSeuratObject(
 )
 
 # Calculate mitochondrial percentage
-
 LUBMET1_seurat[["percent.mt"]] <- PercentageFeatureSet(
   LUBMET1_seurat,
   pattern = "^MT-"
 )
 
 # Visualize QC metrics
-
 VlnPlot(
   LUBMET1_seurat,
   features = c("nFeature_RNA", "nCount_RNA", "percent.mt"),
@@ -332,7 +297,6 @@ VlnPlot(
 )
 
 # Generate QC scatter plots
-
 FeatureScatter(
   LUBMET1_seurat,
   feature1 = "nCount_RNA",
@@ -346,7 +310,6 @@ FeatureScatter(
 )
 
 # Filter low-quality cells
-
 LUBMET1_filtered <- subset(
   LUBMET1_seurat,
   subset =
@@ -356,7 +319,6 @@ LUBMET1_filtered <- subset(
 )
 
 # Visualize QC metrics after filtering
-
 VlnPlot(
   LUBMET1_filtered,
   features = c("nFeature_RNA", "nCount_RNA", "percent.mt"),
@@ -364,7 +326,6 @@ VlnPlot(
 )
 
 # Detect doublets
-
 library(scDblFinder)
 library(SingleCellExperiment)
 sce_d1 <- as.SingleCellExperiment(LUBMET1_filtered)
@@ -372,7 +333,6 @@ set.seed(100)
 sce_d1 <- scDblFinder(sce_d1)
 
 # Add doublet scores and classifications
-
 LUBMET1_filtered$doublet_score <-
   colData(sce_d1)$scDblFinder.score
 
@@ -380,11 +340,9 @@ LUBMET1_filtered$doublet_class <-
   colData(sce_d1)$scDblFinder.class
 
 # Summarize doublet classifications
-
 table(LUBMET1_filtered$doublet_class)
 
 # Visualize doublet scores
-
 library(ggplot2)
 ggplot(LUBMET1_filtered@meta.data,
        aes(x = nCount_RNA,
@@ -398,7 +356,6 @@ ggplot(LUBMET1_filtered@meta.data,
   theme_classic()
 
 # Visualize doublet score by classification
-
 VlnPlot(
   LUBMET1_filtered,
   features = "doublet_score",
@@ -406,13 +363,13 @@ VlnPlot(
 )
 
 # Remove doublets
-
 LUBMET1_filtered <- subset(LUBMET1_filtered, subset = doublet_class == "singlet")
 #===========================================
+# SAMPLE 5 . LUBMET7
+#===========================================
 # Load and Create Seurat Object
-
 library(Seurat)
-sc_data <- Read10X(data.dir = "D:/oza/GSE234832_RAW/LUBMET7/")
+sc_data <- Read10X(data.dir = "/Users/Technology - Laptoop/Downloads/GSE234832_RAW/LUBMET7/")
 
 LUBMET7_seurat <- CreateSeuratObject(
   counts = sc_data,
@@ -420,14 +377,12 @@ LUBMET7_seurat <- CreateSeuratObject(
 )
 
 # Calculate mitochondrial percentage
-
 LUBMET7_seurat[["percent.mt"]] <- PercentageFeatureSet(
   LUBMET7_seurat,
   pattern = "^MT-"
 )
 
 # Visualize QC metrics
-
 VlnPlot(
   LUBMET7_seurat,
   features = c("nFeature_RNA", "nCount_RNA", "percent.mt"),
@@ -435,7 +390,6 @@ VlnPlot(
 )
 
 # Generate QC scatter plots
-
 FeatureScatter(
   LUBMET7_seurat,
   feature1 = "nCount_RNA",
@@ -448,7 +402,6 @@ FeatureScatter(
 )
 
 # Filter low-quality cells
-
 LUBMET7_filtered <- subset(
   LUBMET7_seurat,
   subset = nFeature_RNA > 200 &
@@ -457,7 +410,6 @@ LUBMET7_filtered <- subset(
 )
 
 # Visualize QC metrics after filtering
-
 VlnPlot(
   LUBMET7_filtered,
   features = c("nFeature_RNA", "nCount_RNA", "percent.mt"),
@@ -465,7 +417,6 @@ VlnPlot(
 )
 
 # Detect doublets
-
 library(scDblFinder)
 library(SingleCellExperiment)
 sce_d1 <- as.SingleCellExperiment(LUBMET7_filtered)
@@ -473,7 +424,6 @@ set.seed(100)
 sce_d1 <- scDblFinder(sce_d1)
 
 # Add doublet scores and classifications
-
 LUBMET7_filtered$doublet_score <-
   colData(sce_d1)$scDblFinder.score
 
@@ -481,11 +431,9 @@ LUBMET7_filtered$doublet_class <-
   colData(sce_d1)$scDblFinder.class
 
 # Summarize doublet classifications
-
 table(LUBMET7_filtered$doublet_class)
 
 # Visualize doublet scores
-
 library(ggplot2)
 ggplot(LUBMET7_filtered@meta.data,
        aes(x = nCount_RNA,
@@ -499,7 +447,6 @@ ggplot(LUBMET7_filtered@meta.data,
   theme_classic()
 
 # Visualize doublet score by classification
-
 VlnPlot(
   LUBMET7_filtered,
   features = "doublet_score",
@@ -507,11 +454,9 @@ VlnPlot(
 )
 
 # Remove doublets
-
 LUBMET7_filtered <- subset(LUBMET7_filtered, subset = doublet_class == "singlet")
 #===========================================
 # Merge all samples
-
 merged_seurat <- merge(
   x = BRBMET2_filtered,
   y = c(BRBMET3_filtered, BRBMET87_filtered, LUBMET7_filtered, LUBMET1_filtered),
@@ -521,7 +466,6 @@ merged_seurat <- merge(
 merged_seurat
 
 # Normalize the data
-
 merged_seurat <- NormalizeData(
   merged_seurat,
   normalization.method = "LogNormalize",
@@ -529,11 +473,9 @@ merged_seurat <- NormalizeData(
 )
 
 # Scale the data
-
 merged_seurat <- ScaleData(merged_seurat)
 
 # Identify highly variable genes
-
 merged_seurat <- FindVariableFeatures(
   merged_seurat,
   selection.method = "vst",
@@ -541,11 +483,9 @@ merged_seurat <- FindVariableFeatures(
 )
 
 # Visualize variable features
-
 VariableFeaturePlot(merged_seurat)
 
 # Display the top 10 variable genes
-
 head(VariableFeatures(merged_seurat), 10)
 plot1 <- VariableFeaturePlot(merged_seurat)
 
@@ -557,7 +497,6 @@ LabelPoints(
 )
 
 # Scale the variable features
-
 merged_seurat <- ScaleData(
   merged_seurat,
   features = VariableFeatures(merged_seurat)
