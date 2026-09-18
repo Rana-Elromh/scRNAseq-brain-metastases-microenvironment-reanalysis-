@@ -1,247 +1,167 @@
-#===========================================
-# SAMPLE 1 . BRBMET2
-#===========================================
+# =========================================================
+# 1. Load packages
+# =========================================================
+
 library(Seurat)
-
-# Read BRBMET2 data
-sc_data <- Read10X(
-  data.dir = "/Users/Technology - Laptoop/Downloads/GSE234832_RAW/BRBMET2/"
-)
-
-# Create Seurat object
-BRBMET2_seurat <- CreateSeuratObject(
-  counts = sc_data,
-  project = "BRBMET2"
-)
-
-# Detect doublets
+library(dplyr)
 library(scDblFinder)
 library(SingleCellExperiment)
+library(harmony)
+set.seed(42)
 
-# Convert Seurat object to SingleCellExperiment
-sce_d1 <- as.SingleCellExperiment(BRBMET2_seurat)
+# =========================================================
+# 2. Define samples and data directory
+# =========================================================
+samples <- list(
+  BRBMET2  = "GSM7475324_BRBMET2",
+  BRBMET3  = "GSM7475325_BRBMET3",
+  BRBMET87 = "GSM7475326_BRBMET87",
+  LUBMET7  = "GSM7475327_LUBMET7",
+  LUBMET1  = "GSM7475328_LUBMET1"
+)
 
-# Run scDblFinder
+data_dir <- "/Users/Technology - Laptoop/Downloads/GSE234832_RAW"
+
+
+# =========================================================
+# 3. Load the 5 samples
+# =========================================================
+seurat_list <- lapply(names(samples), function(s) {
+  
+  sample_dir <- file.path(data_dir, s)
+  
+  mat <- ReadMtx(
+    mtx = file.path(sample_dir, "matrix.mtx.gz"),
+    features = file.path(sample_dir, "features.tsv.gz"),
+    cells = file.path(sample_dir, "barcodes.tsv.gz"),
+    feature.column = 2
+  )
+  
+  CreateSeuratObject(
+    counts = mat,
+    project = s,
+    min.cells = 0,
+    min.features = 0
+  )
+})
+
+names(seurat_list) <- names(samples)
+
+
+# =========================================================
+# 4. QC for each sample (adaptive threshold capped at 40%)
+# =========================================================
+
+filtered_list <- lapply(names(seurat_list), function(s) {
+  
+  obj <- seurat_list[[s]]
+  obj[["percent.mt"]] <- PercentageFeatureSet(obj, pattern = "^MT-")
+  
+  meta <- obj@meta.data
+  
+  mt_upper <- min(
+    median(meta$percent.mt) + 3 * mad(meta$percent.mt),
+    40
+  )
+  
+  feat_lower <- pmax(
+    200,
+    median(meta$nFeature_RNA) - 3 * mad(meta$nFeature_RNA)
+  )
+  
+  feat_upper <- median(meta$nFeature_RNA) + 3 * mad(meta$nFeature_RNA)
+  
+  keep <- meta$percent.mt < mt_upper &
+    meta$nFeature_RNA > feat_lower &
+    meta$nFeature_RNA < feat_upper
+  
+  obj[, keep]
+})
+
+names(filtered_list) <- names(seurat_list)
+
+lapply(filtered_list, ncol)
+
+
+# =========================================================
+# 5. Merge the 5 QC-filtered samples
+# =========================================================
+
+merged_qc <- merge(
+  x = filtered_list[[1]],
+  y = filtered_list[-1],
+  add.cell.ids = names(filtered_list)
+)
+
+dim(merged_qc)
+
+merged_qc <- JoinLayers(merged_qc)
+
+
+# =========================================================
+# 6. Detect doublets using scDblFinder
+# =========================================================
+
+sce <- as.SingleCellExperiment(merged_qc)
+
 set.seed(100)
-sce_d1 <- scDblFinder(sce_d1)
 
-# Add doublet results to Seurat object
-BRBMET2_seurat$doublet_score <- colData(sce_d1)$scDblFinder.score
-BRBMET2_seurat$doublet_class <- colData(sce_d1)$scDblFinder.class
+sce <- scDblFinder(
+  sce,
+  samples = "orig.ident"
+)
 
-# Check doublet classification
-table(BRBMET2_seurat$doublet_class)
 
-# Remove doublets
-BRBMET2_seurat <- subset(
-  BRBMET2_seurat,
+# =========================================================
+# 7. Add doublet results to Seurat object
+# =========================================================
+
+merged_qc$doublet_score <- colData(sce)$scDblFinder.score
+merged_qc$doublet_class <- colData(sce)$scDblFinder.class
+
+table(merged_qc$doublet_class)
+
+
+# =========================================================
+# 8. Remove doublets
+# =========================================================
+
+merged_singlets <- subset(
+  merged_qc,
   subset = doublet_class == "singlet"
 )
 
-# Check number of cells after removing doublets
-ncol(BRBMET2_seurat)
-#===========================================
-# SAMPLE 2 . BRBMET3
-#===========================================
-library(Seurat)
+ncol(merged_singlets)
 
-# Read BRBMET3 data
-sc_data <- Read10X(
-  data.dir = "/Users/Technology - Laptoop/Downloads/GSE234832_RAW/BRBMET3/"
-)
 
-# Create Seurat object
-BRBMET3_seurat <- CreateSeuratObject(
-  counts = sc_data,
-  project = "BRBMET3"
-)
+# =========================================================
+# 9. Normalization
+# =========================================================
 
-# Detect doublets
-library(scDblFinder)
-library(SingleCellExperiment)
-
-# Convert Seurat object to SingleCellExperiment
-sce_d2 <- as.SingleCellExperiment(BRBMET3_seurat)
-
-# Run scDblFinder
-set.seed(100)
-sce_d2 <- scDblFinder(sce_d2)
-
-# Add doublet results to Seurat object
-BRBMET3_seurat$doublet_score <- colData(sce_d2)$scDblFinder.score
-BRBMET3_seurat$doublet_class <- colData(sce_d2)$scDblFinder.class
-
-# Check doublet classification
-table(BRBMET3_seurat$doublet_class)
-
-# Remove doublets
-BRBMET3_seurat <- subset(
-  BRBMET3_seurat,
-  subset = doublet_class == "singlet"
-)
-
-# Check number of cells after removing doublets
-ncol(BRBMET3_seurat)
-#===========================================
-# SAMPLE 3 . BRBMET87
-#===========================================
-library(Seurat)
-
-# Read BRBMET87 data
-sc_data <- Read10X(
-  data.dir = "/Users/Technology - Laptoop/Downloads/GSE234832_RAW/BRBMET87/"
-)
-
-# Create Seurat object
-BRBMET87_seurat <- CreateSeuratObject(
-  counts = sc_data,
-  project = "BRBMET87"
-)
-
-# Detect doublets
-library(scDblFinder)
-library(SingleCellExperiment)
-
-# Convert Seurat object to SingleCellExperiment
-sce_d3 <- as.SingleCellExperiment(BRBMET87_seurat)
-
-# Run scDblFinder
-set.seed(100)
-sce_d3 <- scDblFinder(sce_d3)
-
-# Add doublet results to Seurat object
-BRBMET87_seurat$doublet_score <- colData(sce_d3)$scDblFinder.score
-BRBMET87_seurat$doublet_class <- colData(sce_d3)$scDblFinder.class
-
-# Check doublet classification
-table(BRBMET87_seurat$doublet_class)
-
-# Remove doublets
-BRBMET87_seurat <- subset(
-  BRBMET87_seurat,
-  subset = doublet_class == "singlet"
-)
-
-# Check number of cells after removing doublets
-ncol(BRBMET87_seurat)
-#===========================================
-# SAMPLE 4 . LUBMET1
-#===========================================
-library(Seurat)
-
-# Read LUBMET1 data
-sc_data <- Read10X(
-  data.dir = "/Users/Technology - Laptoop/Downloads/GSE234832_RAW/LUBMET1/"
-)
-
-# Create Seurat object
-LUBMET1_seurat <- CreateSeuratObject(
-  counts = sc_data,
-  project = "LUBMET1"
-)
-
-# Detect doublets
-library(scDblFinder)
-library(SingleCellExperiment)
-
-# Convert Seurat object to SingleCellExperiment
-sce_d5 <- as.SingleCellExperiment(LUBMET1_seurat)
-
-# Run scDblFinder
-set.seed(100)
-sce_d5 <- scDblFinder(sce_d5)
-
-# Add doublet results to Seurat object
-LUBMET1_seurat$doublet_score <- colData(sce_d5)$scDblFinder.score
-LUBMET1_seurat$doublet_class <- colData(sce_d5)$scDblFinder.class
-
-# Check doublet classification
-table(LUBMET1_seurat$doublet_class)
-
-# Remove doublets
-LUBMET1_seurat <- subset(
-  LUBMET1_seurat,
-  subset = doublet_class == "singlet"
-)
-
-# Check number of cells after removing doublets
-ncol(LUBMET1_seurat)
-#===========================================
-# SAMPLE 5 . LUBMET7
-#===========================================
-library(Seurat)
-
-# Read LUBMET7 data
-sc_data <- Read10X(
-  data.dir = "/Users/Technology - Laptoop/Downloads/GSE234832_RAW/LUBMET7/"
-)
-
-# Create Seurat object
-LUBMET7_seurat <- CreateSeuratObject(
-  counts = sc_data,
-  project = "LUBMET7"
-)
-
-# Detect doublets
-library(scDblFinder)
-library(SingleCellExperiment)
-
-# Convert Seurat object to SingleCellExperiment
-sce_d4 <- as.SingleCellExperiment(LUBMET7_seurat)
-
-# Run scDblFinder
-set.seed(100)
-sce_d4 <- scDblFinder(sce_d4)
-
-# Add doublet results to Seurat object
-LUBMET7_seurat$doublet_score <- colData(sce_d4)$scDblFinder.score
-LUBMET7_seurat$doublet_class <- colData(sce_d4)$scDblFinder.class
-
-# Check doublet classification
-table(LUBMET7_seurat$doublet_class)
-
-# Remove doublets
-LUBMET7_seurat <- subset(
-  LUBMET7_seurat,
-  subset = doublet_class == "singlet"
-)
-
-# Check number of cells after removing doublets
-ncol(LUBMET7_seurat)
-#===========================================
-# Merge the five samples
-merged_seurat <- merge(
-  BRBMET2_seurat,
-  y = list(BRBMET3_seurat, BRBMET87_seurat, LUBMET7_seurat, LUBMET1_seurat),
-  add.cell.ids = c("BRBMET2", "BRBMET3", "BRBMET87", "LUBMET7", "LUBMET1")
-)
-
-# Check the total number of cells
-ncol(merged_seurat)
-
-# Normalize the data
-merged_seurat <- NormalizeData(
-  merged_seurat,
+merged_singlets <- NormalizeData(
+  merged_singlets,
   normalization.method = "LogNormalize",
   scale.factor = 10000
 )
 
-# Identify highly variable genes
-merged_seurat <- FindVariableFeatures(
-  merged_seurat,
+
+# =========================================================
+# 10. Find Variable Features
+# =========================================================
+
+merged_singlets <- FindVariableFeatures(
+  merged_singlets,
   selection.method = "vst",
   nfeatures = 2000
 )
 
-# Visualize variable features
-VariableFeaturePlot(merged_seurat)
+VariableFeaturePlot(merged_singlets)
 
-# Display the top 10 variable genes
-head(VariableFeatures(merged_seurat), 10)
+head(VariableFeatures(merged_singlets), 10)
 
-plot1 <- VariableFeaturePlot(merged_seurat)
+plot1 <- VariableFeaturePlot(merged_singlets)
 
-top10 <- head(VariableFeatures(merged_seurat), 10)
+top10 <- head(VariableFeatures(merged_singlets), 10)
 
 LabelPoints(
   plot = plot1,
@@ -249,93 +169,299 @@ LabelPoints(
   repel = TRUE
 )
 
-# Scale the variable features
-merged_seurat <- ScaleData(
-  merged_seurat,
-  features = VariableFeatures(merged_seurat)
+
+
+# =========================================================
+# 11. Scale Data
+# =========================================================
+
+merged_singlets <- ScaleData(merged_singlets)
+
+
+# =========================================================
+# 12. PCA
+# =========================================================
+
+merged_singlets <- RunPCA(
+  merged_singlets,
+  features = VariableFeatures(merged_singlets)
 )
 
-# Run PCA on the scaled data
-merged_seurat <- RunPCA(
-  merged_seurat,
-  features = VariableFeatures(merged_seurat)
+print(merged_singlets[["pca"]], dims = 1:5, nfeatures = 5)
+
+VizDimLoadings(
+  merged_singlets,
+  dims = 1:2,
+  reduction = "pca"
 )
-print(merged_seurat[["pca"]], dims = 1:5, nfeatures = 5)
-# Visualize loadings for the top PCs
-VizDimLoadings(merged_seurat, dims = 1:2, reduction = "pca")
 
-# PCA scatter plot (PC1 vs PC2)
-DimPlot(merged_seurat, reduction = "pca")
+DimPlot(
+  merged_singlets,
+  reduction = "pca"
+)
 
-# Heatmap to explore heterogeneity within a PC
-DimHeatmap(merged_seurat, dims = 1, cells = 500, balanced = TRUE)
+DimHeatmap(
+  merged_singlets,
+  dims = 1,
+  cells = 500,
+  balanced = TRUE
+)
 
-# Determine how many PCs to use downstream (elbow plot)
-ElbowPlot(merged_seurat, ndims = 50)
-# ---------------------------
-#integration across samples using Harmony
-#---------------------------------------------
-library(harmony)
-merged_seurat <- RunHarmony(
-  merged_seurat,
+ElbowPlot(
+  merged_singlets,
+  ndims = 50
+)
+
+
+# =========================================================
+# 13. Harmony Integration
+# =========================================================
+
+merged_singlets <- RunHarmony(
+  merged_singlets,
   group.by.vars = "orig.ident",
   dims.use = 1:30,
-  theta = 4  )
+  theta = 4
+)
 
-# --------------------------------------
-# Step: Clustering & UMAP
-# (Finding cell groups + 2D visualization based on top 30 PCs)
-# -------------------------------------------------------------
-merged_seurat <- FindNeighbors(merged_seurat, reduction = "harmony", dims = 1:30)
-merged_seurat <- FindClusters(merged_seurat, resolution = 0.5)
 
-merged_seurat <- RunUMAP(merged_seurat, reduction = "harmony", dims = 1:30)
-DimPlot(merged_seurat, reduction = "umap", label = TRUE)
+# =========================================================
+# 14. Clustering & UMAP BEFORE Harmony
+# =========================================================
 
-DimPlot(merged_seurat, reduction = "umap", group.by = "orig.ident")
+merged_singlets <- FindNeighbors(
+  merged_singlets,
+  reduction = "pca",
+  dims = 1:30
+)
 
-merged_seurat[["RNA"]] <- JoinLayers(merged_seurat[["RNA"]])
+merged_singlets <- FindClusters(
+  merged_singlets,
+  resolution = 0.5
+)
 
-#----------------------------------------------------------
+merged_singlets <- RunUMAP(
+  merged_singlets,
+  reduction = "pca",
+  dims = 1:30,
+  reduction.name = "umap_pca"
+)
 
-# Find marker genes for each cluster
+DimPlot(
+  merged_singlets,
+  reduction = "umap_pca",
+  group.by = "orig.ident"
+)
+
+
+# =========================================================
+# 15. Clustering & UMAP AFTER Harmony
+# =========================================================
+
+merged_singlets <- FindNeighbors(
+  merged_singlets,
+  reduction = "harmony",
+  dims = 1:30
+)
+
+merged_singlets <- FindClusters(
+  merged_singlets,
+  resolution = 0.5
+)
+
+merged_singlets <- RunUMAP(
+  merged_singlets,
+  reduction = "harmony",
+  dims = 1:30
+)
+
+DimPlot(
+  merged_singlets,
+  reduction = "umap",
+  label = TRUE
+)
+
+DimPlot(
+  merged_singlets,
+  reduction = "umap",
+  group.by = "orig.ident"
+)
+
+
+# =========================================================
+# 16. t-SNE after Harmony integration
+# =========================================================
+
+merged_singlets <- RunTSNE(
+  merged_singlets,
+  reduction = "harmony",
+  dims = 1:30,
+  reduction.name = "tsne_harmony"
+)
+
+DimPlot(
+  merged_singlets,
+  reduction = "tsne_harmony",
+  group.by = "seurat_clusters",
+  label = TRUE
+)
+
+DimPlot(
+  merged_singlets,
+  reduction = "tsne_harmony",
+  group.by = "orig.ident"
+)
+
+
+# =========================================================
+# 17. Find marker genes for each cluster
+# =========================================================
+
 markers <- FindAllMarkers(
-  merged_seurat,
+  merged_singlets,
   only.pos = TRUE,
   min.pct = 0.25,
   logfc.threshold = 0.25
 )
 
-# Top markers per cluster
-library(dplyr)
 top_markers <- markers %>%
   group_by(cluster) %>%
   slice_max(order_by = avg_log2FC, n = 5)
 
 top_markers
-----------------------------------------------------------------
-#Sub-clustering the Fibroblasts population (cluster 7)
-fibroblasts <- subset(merged_seurat, idents = "7")
 
-fibroblasts <- FindVariableFeatures(fibroblasts)
-fibroblasts <- ScaleData(fibroblasts)
-fibroblasts <- RunPCA(fibroblasts)
-fibroblasts <- FindNeighbors(fibroblasts, dims = 1:15)
-fibroblasts <- FindClusters(fibroblasts, resolution = 0.3)
-fibroblasts <- RunUMAP(fibroblasts, dims = 1:15)
+print(top_markers, n = 80)
 
-DimPlot(fibroblasts, label = TRUE)
+# =========================================================
+# 18. Subclustering: Myeloid cluster
+# =========================================================
 
-fibro_markers <- FindAllMarkers(
-  fibroblasts,
+myeloid_markers_check <- c("TREM2", "C1QB", "GPR34", "FOLR2", "C1QC")
+
+avg_expr <- AverageExpression(
+  merged_singlets,
+  features = myeloid_markers_check,
+  group.by = "seurat_clusters"
+)$RNA
+
+myeloid_score <- colMeans(avg_expr)
+
+myeloid_cluster_id <- names(which.max(myeloid_score))
+myeloid_cluster_id <- "0"
+cat("Candidate myeloid cluster:", myeloid_cluster_id, "\n")
+print(sort(myeloid_score, decreasing = TRUE))
+
+myeloid_cells <- WhichCells(
+  merged_singlets,
+  expression = seurat_clusters == myeloid_cluster_id
+)
+
+myeloid <- subset(
+  merged_singlets,
+  cells = myeloid_cells
+)
+
+ncol(myeloid)
+
+table(myeloid$orig.ident)
+
+
+myeloid <- FindVariableFeatures(
+  myeloid,
+  selection.method = "vst",
+  nfeatures = 2000
+)
+
+myeloid <- ScaleData(myeloid)
+
+myeloid <- RunPCA(
+  myeloid,
+  features = VariableFeatures(myeloid)
+)
+
+
+ElbowPlot(
+  myeloid,
+  ndims = 30
+)
+
+
+n_dims <- 1:20
+
+
+myeloid <- RunHarmony(
+  myeloid,
+  group.by.vars = "orig.ident",
+  dims.use = n_dims,
+  theta = 4
+)
+
+
+myeloid <- FindNeighbors(
+  myeloid,
+  reduction = "harmony",
+  dims = n_dims
+)
+
+myeloid <- FindClusters(
+  myeloid,
+  resolution = 0.5
+)
+
+myeloid <- RunUMAP(
+  myeloid,
+  reduction = "harmony",
+  dims = n_dims
+)
+
+
+DimPlot(
+  myeloid,
+  reduction = "umap",
+  label = TRUE
+)
+
+DimPlot(
+  myeloid,
+  reduction = "umap",
+  group.by = "orig.ident"
+)
+
+
+# =========================================================
+# 19. Find marker genes for each myeloid subcluster
+# =========================================================
+
+myeloid_markers <- FindAllMarkers(
+  myeloid,
   only.pos = TRUE,
   min.pct = 0.25,
   logfc.threshold = 0.25
 )
 
-fibro_top_markers <- fibro_markers %>%
+top_myeloid_markers <- myeloid_markers %>%
   group_by(cluster) %>%
-  slice_max(order_by = avg_log2FC, n = 10)
+  slice_max(
+    order_by = avg_log2FC,
+    n = 5
+  )
 
-fibro_top_markers
-#---------------------------------------------------
+print(top_myeloid_markers, n = Inf)
+
+
+FeaturePlot(
+  myeloid,
+  features = c(
+    "C1QC",
+    "C1QB",
+    "TREM2",
+    "FOLR2",
+    "LYZ",
+    "CD3D",
+    "CD3E",
+    "NKG7",
+    "GNLY",
+    "MKI67"
+  ),
+  reduction = "umap"
+)
