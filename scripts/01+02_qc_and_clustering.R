@@ -20,7 +20,7 @@ samples <- list(
   LUBMET1  = "GSM7475328_LUBMET1"
 )
 
-data_dir <- "/Users/Technology - Laptoop/Downloads/GSE234832_RAW"
+data_dir <-  "C:/Users/bytee/scRNAseq-brain-metastases-microenvironment-reanalysis-/data/"
 
 
 # =========================================================
