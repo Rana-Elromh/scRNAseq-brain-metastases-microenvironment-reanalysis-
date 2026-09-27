@@ -188,7 +188,11 @@ mm_cells <- myeloid@meta.data %>%
   filter(cell_type_mm %in% c("Macrophage", "Microglia"))
 
 mm_summary <- mm_cells %>%
+<<<<<<< HEAD
   dplyr::count(cell_type_mm, state) %>%
+=======
+  count(cell_type_mm, state) %>%
+>>>>>>> c0760bc213e692135899256480b9de266cda11ed
   group_by(cell_type_mm) %>%
   mutate(pct = n / sum(n) * 100,
          label = paste0(round(pct, 1), "%"))
