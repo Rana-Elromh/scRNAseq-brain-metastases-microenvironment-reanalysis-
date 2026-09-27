@@ -23,12 +23,12 @@
 # 33.2.0 Visualization & Results Extraction#
   # 33.2.1 Circle Plot — Overall Communication Network#
   # 33.2.2 Circular plots for Pathways Communication#
-    # 33.2.2.a Circular plots for Pathways Communication (Including self communication)#
-    # 33.2.2.b Circular plots for Pathways Communication (Excluding self communication)#
   # 33.2.3 Ligand-Receptor Results and visualisations# 
     # 33.2.3.a Ligand-Receptor Results and visualisations (Including self communication)#
     # 33.2.3.b Ligand-Receptor Results and visualisations (Excluding self communication)#
-
+  # 33.2.4 Ligand-Receptor Results and visualisations_*fibroblasts_only* *For this part, Two adjustments in the functions script are needed*
+    # 33.2.4.a Ligand-Receptor Results and visualisations (Including self communication)#
+    # 33.2.4.b Ligand-Receptor Results and visualisations (Excluding self communication)#
 ###########################################
 # 33.1.0 Install & Load Required Libraries#
 ########################################### 
@@ -87,6 +87,7 @@ fibro_macro_micro_obj <- subset(
   full_object,
   subset = DEG_annotation %in% c("Pericyte_fibroblast", "Macrophage_M1-like", "Macrophage_M2-like", "Microglia_M1-like", "Microglia_M2-like")
 )
+
 ################################################################
 # 33.1.2 Create CellChat object from the existing Seurat object# 
 ################################################################
@@ -148,7 +149,7 @@ cellchat_obj <- computeCommunProbPathway(cellchat_obj)
 cellchat_obj <- aggregateNet(cellchat_obj)
 
 
-cellchat_obj_fibroblast_source <- subsetCommunication(cellchat_obj, sources.use = "Pericyte_fibroblast")
+cellchat_obj_fibro <- subsetCommunication(cellchat_obj, sources.use = "Pericyte_fibroblast")
 ############################################ 
 # 33.2.0 Visualization & Results Extraction#
 ############################################ 
@@ -186,16 +187,9 @@ pathways <- cellchat_obj@netP$pathways
 ####*Extracts the inferred ligand-receptor interactions into a structured data frame for downstream analysis and export.*
 lr_results <- subsetCommunication(cellchat_obj)
 
-### Filter (Exclude) only the self-communications: So we can see the pathways that connect both cell types only 
-filtered_pathways <- lr_results %>%
-  filter(source != target) %>%
-  pull(pathway_name) %>%
-  unique()
 #### *function automates the visualization of cell-cell communication pathways by cross-referencing a target list of pathways against a CellChat dataset and arranging circular network plots into a multi-page, 3*3 grid layout. Designed for high-throughput reporting, it dynamically handles output in multi-page PDF, while incorporating robust tryCatch error handling to cleanly skip or label pathways that lack significant interactions without crashing the rendering process.*
 #*** Make sure that you already have the "plot_cellchat_pathway_grid" function in your workspace by running "Cell_cell_communication_functions.R" script.
-####################################################################################
-# 33.2.2.a Circular plots for Pathways Communication (Including self communication)#
-####################################################################################
+
 ### Run Pathway viusalisation function over all pathways (Including self-communcation) and save the output in the filename
 plot_cellchat_pathway_png(
   object = cellchat_obj,
@@ -203,16 +197,6 @@ plot_cellchat_pathway_png(
   filename = "Cell_cell_communications_Including_self_communications"
 )
 
-##################################################################################
-# 33.2.2.b Circular plots for Pathways Communication (Excluding self communication)#
-##################################################################################
-
-### Run Pathway viusalisation function over all pathways (Excluding self-communcation) and save the output in the filename
-plot_cellchat_pathway_png(
-  object = cellchat_obj,  
-  pathways = filtered_pathways,
-  filename = "Cell_cell_communications_Excluding_self_communication"
-)
 #################################################### 
 # 33.2.3 Ligand-Receptor visualisations# 
 #################################################### 
@@ -232,7 +216,6 @@ process_lr_interactions(
   cellchat_obj = cellchat_obj, 
   exclude_self = TRUE
 )
-
 
 # View session info directly in the console
 sessionInfo()

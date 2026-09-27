@@ -58,9 +58,12 @@ process_lr_interactions <- function(cellchat_obj, exclude_self = FALSE, file_pre
   #  Visualisations of LR interactions *without* pathways
   plot_data <- lr_results %>%
     mutate(Cell_pair = paste(source, "->", target)) %>%
-    filter(pval < 0.01)
+    filter(pval < 0.01) 
+  # %>%    #Uncomment these 2 lines for fibroblast only visualisations
+  #   filter(source == "Pericyte_fibroblast") 
   # Safety check in case filtering removes all rows
   if (nrow(plot_data) > 0) {
+    # png(paste0(prefix_str, "Ligand-receptor_interactions_fibro_only.png"), width = 4, height = 8, units = "in", res = 1200) #Uncomment this line for fibroblast only visualisations
     png(paste0(prefix_str, "Ligand-receptor_interactions.png"), width = 8, height = 16, units = "in", res = 1200)
     p1 <- ggplot(plot_data, aes(x = Cell_pair, y = interaction_name_2)) +
       geom_point(aes(color = prob), size = 3.5) +
@@ -91,7 +94,9 @@ process_lr_interactions <- function(cellchat_obj, exclude_self = FALSE, file_pre
   # Visualisations of LR interactions *with* pathways
   plot_data_with_pathways <- lr_results %>%
     mutate(Cell_pair = paste(source, "->", target)) %>%
-    filter(pval < 0.01) %>%
+    filter(pval < 0.01) 
+  # %>% #Uncomment these 2 lines for fibroblast only visualisations
+  #   filter(source == "Pericyte_fibroblast") %>% 
     mutate(pathway_label = paste(pathway_name, "Pathway through", annotation)) %>%
     arrange(pathway_label, interaction_name_2) %>%
     mutate(
@@ -99,8 +104,8 @@ process_lr_interactions <- function(cellchat_obj, exclude_self = FALSE, file_pre
       pathway_label = factor(pathway_label, levels = unique(pathway_label))
     )
   if (nrow(plot_data_with_pathways) > 0) {
-    png(paste0(prefix_str, "Ligand-receptor_interactions_grouped_pathways.png"), width = 11, height = 18, units = "in", res = 1200)
-    
+    # png(paste0(prefix_str, "Ligand-receptor_interactions_grouped_pathways_fibro_only.png"), width = 7, height = 9, units = "in", res = 1200) #Uncomment this line for fibroblast only visualisations
+    png(paste0(prefix_str, "Ligand-receptor_interactions_grouped_pathways.png"), width = 12, height = 18, units = "in", res = 1200)
     p2 <- ggplot(plot_data_with_pathways, aes(x = Cell_pair, y = interaction_name_2)) +
       geom_point(aes(color = prob), size = 3.5) +
       facet_grid(pathway_label ~ ., scales = "free_y", space = "free_y") +
