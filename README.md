@@ -125,6 +125,7 @@ Principal component analysis effectively captured major biological axes of varia
 
 Figure x. PCA scatter plot showing single cells projected onto PC_1 and PC_2, colored by sample origin.   (B) Heatmap displaying the top driving genes along PC_1, separating CNS/oligodendrocyte markers (PLP1, MOG) from metastatic/inflammatory markers (SPDEF, S100A14).   
 Inspection of the elbow plot confirmed that the top 30 principal components accounted for the majority of transcriptomic variance within the dataset.
+
 ![Aggregated Interactions Count](figures/01_Preprocessing_and_Clustering/06_PCA_Elbow_Plot.png)
 
 Figure x. Heatmap displaying the top driving genes along PC_1, separating CNS/oligodendrocyte markers (PLP1, MOG) from metastatic/inflammatory markers (SPDEF, S100A14).   
@@ -135,15 +136,19 @@ Unsupervised clustering across the dataset identified 16 distinct transcriptomic
 ![Aggregated Interactions Count](figures/01_Preprocessing_and_Clustering/07_UMAP_Plot_by_Sample.png)
 
 Figure x. Evaluation of batch correction and single-cell embedding. Uncorrected UMAP plot colored by sample identity, showing pre-integration batch effects.
+
 ![Aggregated Interactions Count](figures/01_Preprocessing_and_Clustering/08_UMAP_Clusters_Plot.png)
 
 Figure x. Evaluation of batch correction and single-cell embedding. Post-Harmony UMAP plot colored by unsupervised Seurat clusters (0–15).
+
 ![Aggregated Interactions Count](figures/01_Preprocessing_and_Clustering/09_UMAP_Plot_by_Sample.png)
 
 Figure x. Evaluation of batch correction and single-cell embedding. Post-Harmony UMAP plot colored by sample identity, demonstrating integration across shared cluster spaces.
+
 ![Aggregated Interactions Count](figures/01_Preprocessing_and_Clustering/10_tSNE_Clusters_Plot.png)
 
 Figure x. Evaluation of batch correction and single-cell embedding. Post-Harmony t-SNE plot colored by Seurat clusters.
+
 ![Aggregated Interactions Count](figures/01_Preprocessing_and_Clustering/11_tSNE_Plot_by_Sample.png)
 
 Figure x. Evaluation of batch correction and single-cell embedding. Post-Harmony t-SNE plot colored by sample identity.
@@ -154,12 +159,15 @@ To determine the principal components (PCs) capturing the highest proportion of 
 ![Aggregated Interactions Count](figures/01_Preprocessing_and_Clustering/12_PCA_Elbow_Plot.png)
 
 Figure x. Dimensionality reduction and sub-clustering of myeloid populations. PCA elbow plot illustrating the standard deviation accounted for by each principal component, with an elbow point observed near PC 8–10.
+
 ![Aggregated Interactions Count](figures/01_Preprocessing_and_Clustering/13_UMAP_Clusters_Plot.png)
 
 Figure x. Dimensionality reduction and sub-clustering of myeloid populations. Post-Harmony UMAP embedding displaying 7 distinct sub-clusters (Clusters 0–6).
+
 ![Aggregated Interactions Count](figures/01_Preprocessing_and_Clustering/14_UMAP_Plot_by_Sample.png)
 
 Figure x. Dimensionality reduction and sub-clustering of myeloid populations. UMAP projection colored by sample identity (orig.ident), demonstrating homogenous sample integration and lack of batch effect across sub-clusters
+
 ![Aggregated Interactions Count](figures/01_Preprocessing_and_Clustering/15_UMAP_Marker_Genes_FeaturePlot.png)
 
 Figure x. Expression landscape of canonical lineage and functional marker genes. Feature plots displaying normalized expression levels of key cell-type markers projected on UMAP space. Myeloid and macrophage-associated markers (C1QC, C1QB, TREM2, FOLR2, LYZ) show broad expression across main clusters. T-cell (CD3D, CD3E), NK cell/cytotoxic (NKG7, GNLY), and proliferative (MKI67) markers show sparse or cluster-restricted expression.
@@ -173,6 +181,7 @@ Figure x. Global cellular landscape and marker gene expression in brain metastas
 
 #### Differential expression annotation of the Myeloid sub-clusters
 Sub-clustering restricted to the myeloid compartment further dissected four distinct sub-populations: Macrophages, Macrophage_MMP9_high_mito, Microglia, and type 2 conventional dendritic cells (cDC2).
+
 ![Aggregated Interactions Count](figures/02_Annotation/Myeloid_subtypes_and_states.png)
 
 Figure x. Myeloid subtype characterization and M1/M2 polarization states.UMAP embedding of high-resolution sub-clustered myeloid populations identifying Macrophages, Macrophage_MMP9_high_mito, Microglia, and cDC2s.
@@ -180,12 +189,15 @@ Figure x. Myeloid subtype characterization and M1/M2 polarization states.UMAP em
 #### Determining, Annotation, and Visualizations of M1 and M2 states
 Module scoring for canonical pro-inflammatory (M1) versus anti-inflammatory/immunosuppressive (M2) transcriptional signatures revealed that microglia exhibit elevated baseline M1 score profiles compared to macrophages. 
 Differential M1 minus M2 scoring projected across UMAP space highlighted continuous spatial gradients of polarization rather than discrete binary phenotypes. Quantitative proportion analysis confirmed that M1-like state activation predominated in both lineages, accounting for 85.4% of microglia and 50.7% of macrophages, whereas M2-like state polarization (24.5%) and intermediate states (24.9%) were substantially more prevalent within bone marrow-derived macrophages.
+
 ![Aggregated Interactions Count](figures/02_Annotation/M1_score_M2_score_plot.png)
 
 Figure x. Myeloid subtype characterization and M1/M2 polarization states. Violin plots showing module score distributions for M1 (left) and M2 (right) transcriptomic signatures across myeloid sub-types.   
+
 ![Aggregated Interactions Count](figures/02_Annotation/M_%20score_minus_M2_score.png)
 
 Figure x. Myeloid subtype characterization and M1/M2 polarization states. UMAP feature plot displaying the composite polarization score (M1 score minus M2 score), where positive values (blue) denote M1-like skewing and negative values (red) denote M2-like skewing.
+
 ![Aggregated Interactions Count](figures/02_Annotation/02_Annotation/Percentage_of_myeolid_cells.png)
 
 Figure x. Myeloid subtype characterization and M1/M2 polarization states. Stacked bar plot illustrating the relative proportion of M1-like, M2-like, and intermediate polarization states among Macrophage and Microglia lineages.
@@ -212,9 +224,11 @@ Functional enrichment analysis of macrophage polarization states confirmed disti
 
 #### Overall Communication Network using CellChat Model
 Aggregated cell-cell communication analysis across all signaling pathways revealed extensive crosstalk among microenvironmental cell populations. Overall interaction counts and weights were heavily dominated by bidirectional signaling between Macrophage_M1-like and Macrophage_M2-like subsets. Pericyte_fibroblasts additionally exhibited robust paracrine communication with both macrophage polarization states, whereas Microglia populations displayed comparatively fewer total interactions across the network
+
 ![Aggregated Interactions Count](figures/04_Cell_Cell_Communication/33.2.1%20Circle%20Plot-Overall%20Communication%20Network/Aggregated_Interactions_Count.png)
 
 Figure x. Global cell-cell communication network across the brain metastasis microenvironment. Circular network plot displaying the total number of inferred interactions (counts) between pericytes/fibroblasts, polarized macrophages (M1-like and M2-like), and polarized microglia (M1-like and M2-like). Numbers on directed edges indicate total interaction counts between source and target populations.
+
 ![Aggregated Interactions Count](figures/04_Cell_Cell_Communication/33.2.1%20Circle%20Plot-Overall%20Communication%20Network/Aggregated_Interactions_Strength.png)
 
 Figure x. Global cell-cell communication network across the brain metastasis microenvironment. Circular network plot displaying the total interaction strength (weighted communication probability) aggregated across all signaling pathways. Edge thickness corresponds to signaling strength
@@ -222,15 +236,18 @@ Figure x. Global cell-cell communication network across the brain metastasis mic
 #### Specific Pathways Network Inference
 Analysis of pathway-specific signaling networks demonstrated distinct cell-type-driven communication axes within the brain metastasis microenvironment. For the COLLAGEN pathway, Pericyte_fibroblasts functioned as the exclusive signal source, directing widespread paracrine interactions toward Macrophage_M1-like, Macrophage_M2-like, Microglia_M1-like, and Microglia_M2-like cells, alongside prominent autocrine signaling. 
 Conversely, the Prostaglandin pathway operated primarily through dual signaling hubs: Macrophage_M1-like cells served as a primary sender directing signals to both M1-like and M2-like Microglia alongside autocrine feedback, while Pericyte_fibroblasts independently targeted Macrophage_M1-like, Microglia_M1-like, and Microglia_M2-like populations. Macrophage_M2-like cells showed no active participation in the Prostaglandin network
+
 ![Aggregated Interactions Count](figures/04_Cell_Cell_Communication/33.2.2%20Circular%20plots%20for%20Pathways%20Communication/Cell_cell_communications_Including_self_communications_COLLAGEN.png)
 
 Figure x. Pathway-specific cell-cell communication networks. Circular network plot of the COLLAGEN signaling pathway, highlighting Pericyte_fibroblasts as the primary signal sender targeting all myeloid sub-populations alongside autocrine signaling.   (B) Circular network plot of the Prostaglandin signaling pathway, displaying dual signaling hubs centered on Macrophage_M1-like cells and Pericyte_fibroblasts directing paracrine signals toward M1-like and M2-like microglia. 
+
 ![Aggregated Interactions Count](figures/04_Cell_Cell_Communication/33.2.2%20Circular%20plots%20for%20Pathways%20Communication/Cell_cell_communications_Including_self_communications_Prostaglandin.png)
 
 Figure x. Pathway-specific cell-cell communication networks. Circular network plot of the Prostaglandin signaling pathway, displaying dual signaling hubs centered on Macrophage_M1-like cells and Pericyte_fibroblasts directing paracrine signals toward M1-like and M2-like microglia. 
 
 #### Ligand-Receptor Interactions
 Detailed evaluation of ligand-receptor pairs (p < 0.01) demonstrated significant variation across target cell pairs. Evaluation of fibroblast-derived signaling revealed distinct receptor-binding preferences across recipient myeloid populations, particularly regarding Syndecan-4 (SDC4) interactions. Fibroblasts engaged M1-like macrophages (Pericyte_fibroblast -> Macrophage_M1-like) through collagen–SDC4 pairs (COL1A1–SDC4, COL6A1–SDC4, and COL9A3–SDC4) as well as MDK–SDC4 signaling. Crucially, these SDC4-mediated interactions were completely absent in M2-like macrophages (Pericyte_fibroblast -> Macrophage_M2-like), which interacted with fibroblast-derived collagens exclusively via CD44 (COL1A1–CD44, COL6A1–CD44, COL9A3–CD44). A similar polarization pattern was mirrored in microglia, where M1-like microglia retained low-level COL1A1–SDC4 communication while both M1- and M2-like microglia primarily engaged CD44.
+
 ![Aggregated Interactions Count](figures/04_Cell_Cell_Communication/33.2.4%20Ligand-Receptor%20Results%20and%20visualisations_fibroblasts_only/Including_Self_Ligand-receptor_interactions_grouped_pathways_fibro_only.png)
 
 Figure x. Fibroblast-centric ligand-receptor communication landscape.Faceted dot plot displaying significant (p < 0.01) ligand-receptor interactions originating from Pericyte_fibroblasts across target recipient cell types. Color intensity represents communication probability. Collagen and Midkine signaling demonstrate selective SDC4 receptor engagement in M1-like macrophages compared to CD44-predominant binding in M2-like macrophages.
