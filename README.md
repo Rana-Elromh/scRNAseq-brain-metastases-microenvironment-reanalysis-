@@ -113,55 +113,62 @@ Single-cell transcriptomic profiles were successfully loaded across all five bra
 Sample-specific adaptive thresholding based on median absolute deviations effectively filtered out low-quality dying cells with high mitochondrial read content and unviable transcript counts. In silico doublet detection using scDblFinder identified and removed artificial cell multiplets from the merged dataset, yielding a clean singlet population for downstream integrative analyses.
 
 #### Normalization, Identification of Variable Features, and Scaling
-Log-normalization and variance-stabilizing transformation successfully identified 2,000 hypervariable genes across the singlet dataset. Linear scaling centered gene expression values appropriately across features, setting up the dataset for linear dimensional reduction.
+After normalisation, identification of highly variable features across the single-cell dataset yielded 2,000 highly variable genes out of 33,538 total detected features, with ACY3 and COL3A1 exhibiting the highest standardized variance.
 
+![Aggregated Interactions Count](figures/01_Preprocessing_and_Clustering/02_Labeled%20VariableFeaturePlot.png)
+Figure x. Variable feature selection and principal component analysis. Variance plot showing 2,000 highly variable genes (red) selected from 33,538 total detected genes, with top variable genes labeled (ACY3, COL3A1).
 #### Principal Component Analysis (PCA)
-Principal component analysis effectively captured major biological axes of variation across the top dimensions. Inspection of the elbow plot confirmed that the top 30 principal components accounted for the majority of transcriptomic variance within the dataset.
+Principal component analysis effectively captured major biological axes of variation across the top dimensions. Principal component analysis (PCA) based on these variable genes revealed distinct sample-level driver patterns along the major axes of variation. PC_1 clearly separated LUBMET1 samples along the negative axis from BRBMET87 samples aligned along positive PC_2, while BRBMET2, BRBMET3, and LUBMET7 populated intermediate distribution spaces. Top loading genes driving PC_1 highlighted opposing transcriptional profiles, with oligodendrocyte- and CNS-associated markers (PLP1, TF, MOG, APLP1, CARNS1, NKX6-2, STMN4, ENPP2) enriched on one spectrum, and epithelial/metastatic and inflammatory drivers (SPDEF, CREB3L4, IER3, LY6E, HMGB3, S100A14, FXYD3, S100A10) defining the opposing axis.
 
-#### Harmony Integration
-Harmony integration effectively harmonized expression profiles across the five distinct metastasis samples. Inter-sample technical variation was successfully removed, placing equivalent biological cell states from different patients into shared coordinate spaces while preserving biological heterogeneity.
+![Aggregated Interactions Count](figures/01_Preprocessing_and_Clustering/05_PCA_Top_Genes_Heatmap.png)
+Figure x. PCA scatter plot showing single cells projected onto PC_1 and PC_2, colored by sample origin.   (B) Heatmap displaying the top driving genes along PC_1, separating CNS/oligodendrocyte markers (PLP1, MOG) from metastatic/inflammatory markers (SPDEF, S100A14).   
+Inspection of the elbow plot confirmed that the top 30 principal components accounted for the majority of transcriptomic variance within the dataset.
+![Aggregated Interactions Count](figures/01_Preprocessing_and_Clustering/06_PCA_Elbow_Plot.png)
+Figure x. Heatmap displaying the top driving genes along PC_1, separating CNS/oligodendrocyte markers (PLP1, MOG) from metastatic/inflammatory markers (SPDEF, S100A14).   
 
-#### Clustering
-Graph-based community detection at a resolution of 0.5 generated distinct cell clusters across the dataset. Comparative analysis demonstrated that clustering on Harmony-integrated dimensions yielded coherent cell groupings free from sample-specific batch artifacts compared to clustering on uncorrected PCA space.
+#### Harmony Integration, Clustering, and Visualization (UMAP and t-SNE)
+Unsupervised clustering across the dataset identified 16 distinct transcriptomic clusters (Clusters 0–15). Prior to integration, uncorrected UMAP embedding exhibited pronounced batch-driven separation, with individual clusters composed almost exclusively of single samples (e.g., BRBMET2, BRBMET87, and LUBMET7 segregating into isolated islands). Application of Harmony batch correction successfully mitigated sample-specific variation, driving multi-sample alignment across central shared clusters while preserving true biological heterogeneity. Both post-Harmony UMAP and t-SNE projections demonstrated consistent spatial topology, effectively grouping homologous cell states across diverse patient origins.
 
-#### Clusters Visualization (UMAP and t-SNE)
-Both UMAP and t-SNE projections based on Harmony dimensions clearly resolved discrete cellular populations. Color-coding embeddings by sample identity (orig.ident) confirmed thorough inter-sample mixing across all shared clusters, whereas cluster-labeled projections demonstrated well-separated biological lineages.
-
-#### Identification of Clusters Marker Genes
-Differential expression testing with FindAllMarkers identified robust set-specific upregulated marker profiles for each cluster (padj < 0.05, log_2FC > 0.25). Extraction of top marker genes ranked by average log2 fold-change established clear cell-identity signatures defining each distinct parenchymal, immune, and stromal cluster.
+![Aggregated Interactions Count](figures/01_Preprocessing_and_Clustering/07_UMAP_Plot_by_Sample.png)
+Figure x. Evaluation of batch correction and single-cell embedding. Uncorrected UMAP plot colored by sample identity, showing pre-integration batch effects.
+![Aggregated Interactions Count](figures/01_Preprocessing_and_Clustering/08_UMAP_Clusters_Plot.png)
+Figure x. Evaluation of batch correction and single-cell embedding. Post-Harmony UMAP plot colored by unsupervised Seurat clusters (0–15).
+![Aggregated Interactions Count](figures/01_Preprocessing_and_Clustering/09_UMAP_Plot_by_Sample.png)
+Figure x. Evaluation of batch correction and single-cell embedding. Post-Harmony UMAP plot colored by sample identity, demonstrating integration across shared cluster spaces.
+![Aggregated Interactions Count](figures/01_Preprocessing_and_Clustering/10_tSNE_Clusters_Plot.png)
+Figure x. Evaluation of batch correction and single-cell embedding. Post-Harmony t-SNE plot colored by Seurat clusters.
+![Aggregated Interactions Count](figures/01_Preprocessing_and_Clustering/11_tSNE_Plot_by_Sample.png)
+Figure x. Evaluation of batch correction and single-cell embedding. Post-Harmony t-SNE plot colored by sample identity.
 
 #### Identification and Sub-clustering of Myeloid Cells
-Expression profiling of canonical myeloid genes (TREM2, C1QB, GPR34, FOLR2, C1QC) unambiguously identified Cluster 0 as the primary myeloid lineage compartment. Re-clustering and sub-analysis of this isolated population following Harmony re-integration revealed distinct myeloid sub-clusters on UMAP projections. Differential marker analysis and feature plots confirmed distinct myeloid functional states—including C1QC/ C1QB/ TREM2/ FOLR2/ LYZ-positive macrophage and microglial subsets as well as MKI67-positive proliferating myeloid cells—while demonstrating complete absence of lymphoid lineage contaminants (CD3D, CD3E, NKG7, GNLY).
+To determine the principal components (PCs) capturing the highest proportion of biological variance, elbow plot evaluation revealed a distinct inflection point around PC 8–10, beyond which standard deviation plateaued. Non-linear dimensionality reduction using UMAP on the top principal components resolved 7 distinct transcriptomic sub-clusters (Clusters 0–6). Post-integration overlay confirmed uniform distribution across all five patient samples (BRBMET2, BRBMET3, BRBMET87, LUBMET1, and LUBMET7), demonstrating effective batch correction without sample-specific subset bias. Expression profiling of canonical lineage markers revealed that the subset is heavily enriched for myeloid and macrophage populations. High expression of complement genes (C1QC, C1QB) alongside lipid metabolism and phagocytic markers (TREM2, FOLR2, LYZ) was localized across the primary contiguous clusters (Clusters 0, 1, and 3–5). Lymphocyte and cytotoxic markers (CD3D, CD3E, NKG7, GNLY) showed minimal or highly localized expression, while proliferation markers (MKI67) defined a distinct, minor cycling population (Cluster 6)
 
-
-#### Automated Annotation of the defined clusters
-Automated annotation using SingleR against the Human Primary Cell Atlas and Monaco Immune reference datasets successfully assigned broad reference labels across the dataset, providing an initial  overview of cell identities prior to marker-based cluster refinement.
+![Aggregated Interactions Count](figures/01_Preprocessing_and_Clustering/12_PCA_Elbow_Plot.png)
+Figure x. Dimensionality reduction and sub-clustering of myeloid populations. PCA elbow plot illustrating the standard deviation accounted for by each principal component, with an elbow point observed near PC 8–10.
+![Aggregated Interactions Count](figures/01_Preprocessing_and_Clustering/13_UMAP_Clusters_Plot.png)
+Figure x. Dimensionality reduction and sub-clustering of myeloid populations. Post-Harmony UMAP embedding displaying 7 distinct sub-clusters (Clusters 0–6).
+![Aggregated Interactions Count](figures/01_Preprocessing_and_Clustering/14_UMAP_Plot_by_Sample.png)
+Figure x. Dimensionality reduction and sub-clustering of myeloid populations. UMAP projection colored by sample identity (orig.ident), demonstrating homogenous sample integration and lack of batch effect across sub-clusters
+![Aggregated Interactions Count](figures/01_Preprocessing_and_Clustering/15_UMAP_Marker_Genes_FeaturePlot.png)
+Figure x. Expression landscape of canonical lineage and functional marker genes. Feature plots displaying normalized expression levels of key cell-type markers projected on UMAP space. Myeloid and macrophage-associated markers (C1QC, C1QB, TREM2, FOLR2, LYZ) show broad expression across main clusters. T-cell (CD3D, CD3E), NK cell/cytotoxic (NKG7, GNLY), and proliferative (MKI67) markers show sparse or cluster-restricted expression.
 
 #### Differential expression annotation of the defined clusters
-Differential expression analysis via FindAllMarkers identified robust gene expression profiles distinguishing all 15 major clusters (clusters 0–14). 
+Differential expression analysis via FindAllMarkers identified robust gene expression profiles distinguishing all 15 major clusters (clusters 0–14). Cell identity assignment was confirmed via distinct lineage-specific marker expression on the expression heatmap, including FOLR2, TREM2, and C1QC in myeloid subsets, CD3D, TRBC1, and NKG7 in $T/\text{NK}$ cells, and COL3A1 in pericyte/fibroblasts.  
 
-#### Create a heatmap and Check for NAs first
-Quality control evaluation confirmed complete metadata integrity across all annotated cells. Expression heatmap visualization (DoHeatmap) demonstrated distinct block-like marker gene expression patterns corresponding strictly to assigned cluster identities, confirming high specificity of marker panels and minimal cross-cluster contamination.
+https://github.com/Rana-Elromh/scRNAseq-brain-metastases-microenvironment-reanalysis-/blob/main/figures/02_Annotation/Cell_type_annotation.png
+![Aggregated Interactions Count](figures/02_Annotation/Cell_type_annotation.png)
 
 #### Differential expression annotation of the Myeloid sub-clusters
-Focused sub-clustering of the myeloid lineage resolved five distinct sub-populations with distinct transcriptomic signatures. These were successfully categorized into classical Macrophages (sub-cluster 0), a stress/metabolically active MMP9-high mitochondrial Macrophage state (sub-cluster 1), Microglia (sub-cluster 2), conventional type 2 Dendritic Cells (cDC2, sub-cluster 3), and Proliferating Myeloid cells (sub-cluster 4).
-
-#### Determining of M1 and M2 states
-Gene module scoring revealed distinct transcriptomic continuum states of M1 pro-inflammatory and M2 anti-inflammatory activation across the myeloid subtypes. Comparison of mean score differences ({M1} - {M2}) via violin plots highlighted heterogeneous polarization preferences across sub-clusters, demonstrating that classical discrete M1/M2 dichotomies are better represented as continuous signature distributions in single-cell resolution.
-#### Annotation of M1 and M2 states
-Categorization based on net polarization score differentials (Delta S = {M1} - {M2}) with a 0.1 threshold successfully segregated macrophages and microglia into distinct functional subpopulations ("M1-like", "M2-like", and "Intermediate"). UMAP visualization of composite state annotations highlighted clear spatial clustering of M1-like versus M2-like polarization phenotypes within the tumor microenvironment.
-#### Visualizations of M1 and M2 states
-Multi-modal visualization confirmed spatial and proportional segregation of myeloid states:
-- Split UMAP Projections: Demonstrated distinct spatial density differences between M1-like, M2-like, and Intermediate cell subsets across Macrophage and Microglia lineages.
+Sub-clustering restricted to the myeloid compartment further dissected four distinct sub-populations: Macrophages, Macrophage_MMP9_high_mito, Microglia, and type 2 conventional dendritic cells (cDC2).
+![Aggregated Interactions Count](figures/02_Annotation/Myeloid_subtypes_and_states.png)
 
 
-- Polarization Gradient: Feature plots of continuous score differentials (Delta S) displayed a clear spectrum ranging from strongly M1-leaning (blue) to strongly M2-leaning (red) domains.
-
-
-- Proportional Quantification: Proportion analysis demonstrated the relative breakdown of M1-like, M2-like, and Intermediate phenotypes within Macrophages versus Microglia, quantifying macrophage/microglial polarization dynamics within the microenvironment.
-
-
-- Subtype Expression Heatmap: Marker gene visualization confirmed top lineage markers defining each sub-cluster state without expression overlap.
+#### Determining, Annotation, and Visualizations of M1 and M2 states
+Module scoring for canonical pro-inflammatory (M1) versus anti-inflammatory/immunosuppressive (M2) transcriptional signatures revealed that microglia exhibit elevated baseline M1 score profiles compared to macrophages. 
+Differential M1 minus M2 scoring projected across UMAP space highlighted continuous spatial gradients of polarization rather than discrete binary phenotypes. Quantitative proportion analysis confirmed that M1-like state activation predominated in both lineages, accounting for 85.4% of microglia and 50.7% of macrophages, whereas M2-like state polarization (24.5%) and intermediate states (24.9%) were substantially more prevalent within bone marrow-derived macrophages.
+![Aggregated Interactions Count](figures/02_Annotation/M1_score_M2_score_plot.png)
+![Aggregated Interactions Count](figures/02_Annotation/M_%20score_minus_M2_score.png)
+![Aggregated Interactions Count](figures/02_Annotation/02_Annotation/Percentage_of_myeolid_cells.png)
 
 
 #### Differential Expression Analysis and Volcano Plot Visualization
@@ -186,15 +193,23 @@ Functional enrichment analysis of macrophage polarization states confirmed disti
 #### Overall Communication Network using CellChat Model
 Aggregated cell-cell communication analysis across all signaling pathways revealed extensive crosstalk among microenvironmental cell populations. Overall interaction counts and weights were heavily dominated by bidirectional signaling between Macrophage_M1-like and Macrophage_M2-like subsets. Pericyte_fibroblasts additionally exhibited robust paracrine communication with both macrophage polarization states, whereas Microglia populations displayed comparatively fewer total interactions across the network
 ![Aggregated Interactions Count](figures/04_Cell_Cell_Communication/33.2.1%20Circle%20Plot-Overall%20Communication%20Network/Aggregated_Interactions_Count.png)
+Figure x. Global cell-cell communication network across the brain metastasis microenvironment. Circular network plot displaying the total number of inferred interactions (counts) between pericytes/fibroblasts, polarized macrophages (M1-like and M2-like), and polarized microglia (M1-like and M2-like). Numbers on directed edges indicate total interaction counts between source and target populations.   (B) Circular network plot displaying the total interaction strength (weighted communication probability) aggregated across all signaling pathways. Edge thickness corresponds to signaling strength
 ![Aggregated Interactions Count](figures/04_Cell_Cell_Communication/33.2.1%20Circle%20Plot-Overall%20Communication%20Network/Aggregated_Interactions_Strength.png)
+Figure x. Global cell-cell communication network across the brain metastasis microenvironment. Circular network plot displaying the total interaction strength (weighted communication probability) aggregated across all signaling pathways. Edge thickness corresponds to signaling strength
+
 #### Specific Pathways Network Inference
 Analysis of pathway-specific signaling networks demonstrated distinct cell-type-driven communication axes within the brain metastasis microenvironment. For the COLLAGEN pathway, Pericyte_fibroblasts functioned as the exclusive signal source, directing widespread paracrine interactions toward Macrophage_M1-like, Macrophage_M2-like, Microglia_M1-like, and Microglia_M2-like cells, alongside prominent autocrine signaling. 
 Conversely, the Prostaglandin pathway operated primarily through dual signaling hubs: Macrophage_M1-like cells served as a primary sender directing signals to both M1-like and M2-like Microglia alongside autocrine feedback, while Pericyte_fibroblasts independently targeted Macrophage_M1-like, Microglia_M1-like, and Microglia_M2-like populations. Macrophage_M2-like cells showed no active participation in the Prostaglandin network
 ![Aggregated Interactions Count](figures/04_Cell_Cell_Communication/33.2.2%20Circular%20plots%20for%20Pathways%20Communication/Cell_cell_communications_Including_self_communications_COLLAGEN.png)
+Figure x. Pathway-specific cell-cell communication networks. Circular network plot of the COLLAGEN signaling pathway, highlighting Pericyte_fibroblasts as the primary signal sender targeting all myeloid sub-populations alongside autocrine signaling.   (B) Circular network plot of the Prostaglandin signaling pathway, displaying dual signaling hubs centered on Macrophage_M1-like cells and Pericyte_fibroblasts directing paracrine signals toward M1-like and M2-like microglia. 
 ![Aggregated Interactions Count](figures/04_Cell_Cell_Communication/33.2.2%20Circular%20plots%20for%20Pathways%20Communication/Cell_cell_communications_Including_self_communications_Prostaglandin.png)
+Figure x. Pathway-specific cell-cell communication networks. Circular network plot of the Prostaglandin signaling pathway, displaying dual signaling hubs centered on Macrophage_M1-like cells and Pericyte_fibroblasts directing paracrine signals toward M1-like and M2-like microglia. 
+
 #### Ligand-Receptor Interactions
 Detailed evaluation of ligand-receptor pairs (p < 0.01) demonstrated significant variation across target cell pairs. Evaluation of fibroblast-derived signaling revealed distinct receptor-binding preferences across recipient myeloid populations, particularly regarding Syndecan-4 (SDC4) interactions. Fibroblasts engaged M1-like macrophages (Pericyte_fibroblast -> Macrophage_M1-like) through collagen–SDC4 pairs (COL1A1–SDC4, COL6A1–SDC4, and COL9A3–SDC4) as well as MDK–SDC4 signaling. Crucially, these SDC4-mediated interactions were completely absent in M2-like macrophages (Pericyte_fibroblast -> Macrophage_M2-like), which interacted with fibroblast-derived collagens exclusively via CD44 (COL1A1–CD44, COL6A1–CD44, COL9A3–CD44). A similar polarization pattern was mirrored in microglia, where M1-like microglia retained low-level COL1A1–SDC4 communication while both M1- and M2-like microglia primarily engaged CD44.
 ![Aggregated Interactions Count](figures/04_Cell_Cell_Communication/33.2.4%20Ligand-Receptor%20Results%20and%20visualisations_fibroblasts_only/Including_Self_Ligand-receptor_interactions_grouped_pathways_fibro_only.png)
+Figure x. Fibroblast-centric ligand-receptor communication landscape.Faceted dot plot displaying significant (p < 0.01) ligand-receptor interactions originating from Pericyte_fibroblasts across target recipient cell types. Color intensity represents communication probability. Collagen and Midkine signaling demonstrate selective SDC4 receptor engagement in M1-like macrophages compared to CD44-predominant binding in M2-like macrophages.
+
 
 ### Discussion
 
