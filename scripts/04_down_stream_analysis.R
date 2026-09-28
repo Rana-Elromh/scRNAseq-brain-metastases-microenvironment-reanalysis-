@@ -1,13 +1,41 @@
+#
+# Title: Uncovering Intercellular Communication Pathways Between Fibroblast and Myeloid Subclusters
+# Sub-Title: "DownStream Analysis (Differential expression analysis, Gene Ontology, KEGG, and REACTOME)"
+# Author: "Rana"
+# Date: "2026-09-20"
+# Output: R.Script
+#  *This script © 2026, by Rana, is licensed under CC BY 4.0*
+#  *To view a copy of this license, visit https://creativecommons.org/licenses/by/4.0/*
 
-library(ggrepel)
-library(clusterProfiler)
-library(org.Hs.eg.db)
-library(ReactomePA)
-library(stringr)
+# **Before run this script, you need to run the two scripts of (01 - 03). Note about changing the directory when needed.
 
+
+# =========================================================================================
+# DownStream Analysis (Differential expression analysis, Gene Ontology, KEGG, and REACTOME)
+# =========================================================================================
+# 27. Differential Expression Analysis and Volcano Plot Visualization
+# 28. Functional Enrichment Analysis (GO, KEGG, Reactome)
+# 29. Pathway Enrichment Visualization
+# 30. Differential Expression and Pathway Enrichment of Fibroblasts
+# 31. Differential Expression of M1-like vs. M2-like Macrophages
+# 32. Pathway Enrichment Analysis of Macrophage Polarization States
+
+
+
+# Install & Load Required Libraries
+## List of CRAN/Bioconductor packages
+cran_pkgs <- c("ggrepel", "clusterProfiler", "org.Hs.eg.db", "ReactomePA", "stringr")
+
+# Check, install missing *CRAN* packages, and load
+for (pkg in cran_pkgs) {
+  if (!requireNamespace(pkg, quietly = TRUE)) {
+    install.packages(pkg)
+  }
+  library(pkg, character.only = TRUE)
+}
 
 # ---------------------------------------------------------
-# 27. VOLCANO PLOT — cleaner labeling, capped y-axis, up/down labeled separately
+# 27. Differential Expression Analysis and Volcano Plot Visualization
 # ---------------------------------------------------------
 
 run_volcano_plot <- function(seurat_obj, group_col, ident.1, ident.2 = NULL,
@@ -93,7 +121,7 @@ ggsave(
 )
 
 # ---------------------------------------------------------
-# 28. ENRICHMENT — run on UP and DOWN genes separately, GO split into BP/MF/CC
+# 28. Directional Functional Enrichment Analysis (GO, KEGG, Reactome)
 # ---------------------------------------------------------
 run_enrichment_updown <- function(degs, pval_cutoff = 0.05, logfc_cutoff = 1) {
   
@@ -124,8 +152,7 @@ run_enrichment_updown <- function(degs, pval_cutoff = 0.05, logfc_cutoff = 1) {
 
 
 # ---------------------------------------------------------
-# 29. DIVERGING BAR PLOT — orange = upregulated pathways, blue = downregulated
-#    (matches Fig 3c/d style from the paper)
+# 29. Pathway Enrichment Visualization
 # ---------------------------------------------------------
 plot_enrichment_updown <- function(res_up, res_down, top_n = 10,
                                    title = "Pathway enrichment",
@@ -164,7 +191,7 @@ plot_enrichment_updown <- function(res_up, res_down, top_n = 10,
 
 
 # =========================================================
-# 30. USAGE — Fibroblast, with up+down together everywhere
+# 30. Differential Expression and Pathway Enrichment of Fibroblasts
 # =========================================================
 
 fibro_label <- "Pericyte_fibroblast"
@@ -217,7 +244,7 @@ ggsave("Fibroblast_GO_MF.png", plot = p_go_mf, width = 8, height = 6, dpi = 300)
 ggsave("Fibroblast_GO_CC.png", plot = p_go_cc, width = 8, height = 6, dpi = 300)
 
 # ======================================================================================
-# 31.M1-macrophage CELL COUNT CHECK + FULL PIPELINE (volcano + GO/KEGG/REACTOME)
+# 31. Differential Expression of M1-like vs. M2-like Macrophages
 # ======================================================================================
 # 1. Define/update the function (paste this in first)
 run_volcano_plot <- function(seurat_obj, group_col, ident.1, ident.2 = NULL,
@@ -370,7 +397,7 @@ ggsave("macrophage_M1_vs_M2_volcano_framed.png",
        plot = macrophage_res$plot, width = 9, height = 7, dpi = 300)
 write.csv(macrophage_res$degs, "Macrophage_M1_vs_M2_DEGs.csv", row.names = FALSE)
 #===============================================================
-# 32. ENRICHMENT
+# 32. Pathway Enrichment Analysis of Macrophage Polarization States
 # ===============================================================
 
 enrich <- run_enrichment_updown(macrophage_res$degs)

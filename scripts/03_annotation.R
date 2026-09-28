@@ -1,11 +1,44 @@
+#
+# Title: Uncovering Intercellular Communication Pathways Between Fibroblast and Myeloid Subclusters
+# Sub_Title: "Annotation of clusters and sub-clusters"
+# Author: "AbdelRahman"
+# Date: "2026-09-13"
+# Output: R.Script
+#  *This script © 2026, by AbdelRahman, is licensed under CC BY 4.0*
+#  *To view a copy of this license, visit https://creativecommons.org/licenses/by/4.0/*
 
-library(ggplot2)
-library(SingleR)
-library(celldex)
+# **Before run this script, you need to run (01+02_qc_and_clustering.R) script
+
+# =======================================
+# Annotation of clusters and sub-clusters
+# =======================================
+# 20. Automated Annotation of the defined clusters
+# 21. Differential expression annotation of the defined clusters
+# 22. A heatmap as QC to Check for NAs
+# 23. Differential expression annotation of the Myeloid sub-clusters
+# 24. Determining of M1 and M2 states
+# 25. Annotation of M1 and M2 states
+# 26. Visualizations of M1 and M2 states
+
+
+
+# Install & Load Required Libraries
+
+## List of CRAN/Bioconductor packages
+cran_pkgs <- c("Seurat", "dplyr", "SingleR", "ggplot2", "celldex")
+
+## Check, install missing *CRAN* packages, and load
+for (pkg in cran_pkgs) {
+  if (!requireNamespace(pkg, quietly = TRUE)) {
+    install.packages(pkg)
+  }
+  library(pkg, character.only = TRUE)
+}
+
 set.seed(42)
 
 #=============================================================================
-# 20. Automated Annotation of merged_singlets
+# 20. Automated Annotation of clusters
 #=============================================================================
 hpca_ref   <- celldex::HumanPrimaryCellAtlasData()
 monaco_ref <- celldex::MonacoImmuneData()
@@ -30,10 +63,9 @@ DimPlot(
 ) +
   ggtitle("Merged Singlets - SingleR Automated Annotation")
 
-
-#==============================================================================
-# 21. Differential expression annotation of merged-singlets
-#==============================================================================
+#===================================================
+# 21. Differential expression annotation of clusters
+#===================================================
 markers_merged_singlets <- FindAllMarkers(
   merged_singlets, only.pos = TRUE,
   min.pct = 0.25, logfc.threshold = 0.25
@@ -74,13 +106,18 @@ Idents(merged_singlets) <- "cell_type"
 DimPlot(merged_singlets, reduction = "umap", group.by = "cell_type",
         label = TRUE, repel = TRUE) + ggtitle("Cell type annotation")
 #=============================================================================
-# 22. Create a heatmap and Check for NAs first
+# 22. A heatmap as QC to Check for NAs
 # =============================================================================
+  top_markers_heatmap <- markers %>%
+  filter(p_val_adj < 0.05) %>%
+  group_by(cluster) %>%
+  slice_max(order_by = avg_log2FC, n = 5) %>%
+  ungroup()
+genes_to_plot <- unique(top_markers_heatmap$gene)
+merged_singlets <- ScaleData(merged_singlets, features = genes_to_plot)
 sum(is.na(merged_singlets$cell_type))
 table(merged_singlets$cell_type, useNA = "always")
 cells_keep <- colnames(merged_singlets)[!is.na(merged_singlets$cell_type)]
-
-
 DoHeatmap(
   merged_singlets,
   features = genes_to_plot,
@@ -93,9 +130,8 @@ DoHeatmap(
 ) +
   scale_fill_gradientn(colors = c("navy", "white", "firebrick")) +
   theme(axis.text.y = element_text(size = 4, face = "bold"))
-
 #===============================================================================
-#23. Differential expression annotation of Myeloid cells
+# 23. Differential expression annotation of Myeloid sub-clusters
 #===============================================================================
 top_myeloid_markers <- myeloid_markers %>%
   filter(p_val_adj < 0.05) %>%
@@ -169,7 +205,7 @@ DimPlot(myeloid, reduction = "umap", group.by = "annotation_state",
         label = TRUE, repel = TRUE) +
   ggtitle("Myeloid cell types and M1/M2-like states")
 #=============================================================================
-# 26. Different visualizations of M1 and M2 states
+# 26. Visualizations of M1 and M2 states
 #=============================================================================
 
 # Plot 1
@@ -188,11 +224,8 @@ mm_cells <- myeloid@meta.data %>%
   filter(cell_type_mm %in% c("Macrophage", "Microglia"))
 
 mm_summary <- mm_cells %>%
-<<<<<<< HEAD
   dplyr::count(cell_type_mm, state) %>%
-=======
   count(cell_type_mm, state) %>%
->>>>>>> c0760bc213e692135899256480b9de266cda11ed
   group_by(cell_type_mm) %>%
   mutate(pct = n / sum(n) * 100,
          label = paste0(round(pct, 1), "%"))
@@ -220,11 +253,3 @@ top_markers_heatmap <- markers %>%
   filter(p_val_adj < 0.05) %>%
   slice_max(order_by = avg_log2FC, n = 5) %>%   # 5 instead of 10 -> ~75 rows total
   ungroup()
-
-
-
-
-
-
-
-

@@ -1,12 +1,13 @@
 #
-# Title: "Cell-cell communication for Brain metastases microenvironment"
+# Title: Uncovering Intercellular Communication Pathways Between Fibroblast and Myeloid Subclusters
+# Sub-Title: "Cell-cell communication for Brain metastases microenvironment"
 # Author: "Mostafa Hassanein"
 # Date: "2026-09-27"
 # Output: R.Script
 #  *This script © 2026, by Mostafa Hassanein, is licensed under CC BY 4.0*
 #  *To view a copy of this license, visit https://creativecommons.org/licenses/by/4.0/*
 
-# Before run this script, you need to run all scripts of (01 - 03). Note about changing the directory when needed.
+# **Before run this script, you need to run all scripts of (01 - 03). Note about changing the directory when needed.
 
 # ============================
 # 33. Cell-Cell Communication#
@@ -26,7 +27,7 @@
   # 33.2.3 Ligand-Receptor Results and visualisations# 
     # 33.2.3.a Ligand-Receptor Results and visualisations (Including self communication)#
     # 33.2.3.b Ligand-Receptor Results and visualisations (Excluding self communication)#
-  # 33.2.4 Ligand-Receptor Results and visualisations_*fibroblasts_only* *For this part, Two adjustments in the functions script are needed*
+  # 33.2.4 Ligand-Receptor Results and visualisations and for *fibroblasts_only *For this part, Two adjustments in the functions script are needed*
     # 33.2.4.a Ligand-Receptor Results and visualisations (Including self communication)#
     # 33.2.4.b Ligand-Receptor Results and visualisations (Excluding self communication)#
 ###########################################

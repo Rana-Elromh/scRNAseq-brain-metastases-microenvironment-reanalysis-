@@ -1,12 +1,51 @@
+#
+# Title: Uncovering Intercellular Communication Pathways Between Fibroblast and Myeloid Subclusters
+# Sub_Title: "Data Loading, Quality Control, Clustering and Sub-clustering"
+# Author: "Jasmine and Fayza"
+# Date: "2026-08-30"
+# Output: R.Script
+#  *This script © 2026, by Jasmine and Fayza, is licensed under CC BY 4.0*
+#  *To view a copy of this license, visit https://creativecommons.org/licenses/by/4.0/*
+
+# **Before run this script, you need to change the directory according to your folder after downloading the data
+
+# ============================================================
+# Data Loading, Quality Control, Clustering and Sub-clustering
+# ============================================================
+# 1. Load packages
+# 2. Define samples and data directory
+# 3. Load the 5 samples
+# 4. QC for each sample (adaptive threshold capped at 40%)
+# 5. Merge the 5 QC-filtered samples
+# 6. Detect doublets using scDblFinder
+# 7. Add doublet results to Seurat object
+# 8. Remove doublets
+# 9. Normalization
+# 10. Find Variable Features
+# 11. Scale Data
+# 12. PCA
+# 13. Harmony Integration
+# 14. Clustering & UMAP BEFORE Harmony
+# 15. Clustering & UMAP AFTER Harmony
+# 16. t-SNE after Harmony integration
+# 17. Find marker genes for each cluster
+# 18. Subclustering: Myeloid cluster
+# 19. Find marker genes for each myeloid subcluster
+
 # =========================================================
 # 1. Load packages
 # =========================================================
+# List of CRAN/Bioconductor packages
+cran_pkgs <- c("Seurat", "dplyr", "scDblFinder", "ggplot2", "SingleCellExperiment", "harmony")
 
-library(Seurat)
-library(dplyr)
-library(scDblFinder)
-library(SingleCellExperiment)
-library(harmony)
+# Check, install missing *CRAN* packages, and load
+for (pkg in cran_pkgs) {
+  if (!requireNamespace(pkg, quietly = TRUE)) {
+    install.packages(pkg)
+  }
+  library(pkg, character.only = TRUE)
+}
+
 set.seed(42)
 
 # =========================================================
@@ -20,8 +59,8 @@ samples <- list(
   LUBMET1  = "GSM7475328_LUBMET1"
 )
 
+# **change the directory according to your folder after downloading the data
 data_dir <-  "C:/Users/bytee/scRNAseq-brain-metastases-microenvironment-reanalysis-/data/"
-
 
 # =========================================================
 # 3. Load the 5 samples
@@ -47,11 +86,9 @@ seurat_list <- lapply(names(samples), function(s) {
 
 names(seurat_list) <- names(samples)
 
-
 # =========================================================
 # 4. QC for each sample (adaptive threshold capped at 40%)
 # =========================================================
-
 filtered_list <- lapply(names(seurat_list), function(s) {
   
   obj <- seurat_list[[s]]
@@ -82,50 +119,37 @@ names(filtered_list) <- names(seurat_list)
 
 lapply(filtered_list, ncol)
 
-
 # =========================================================
 # 5. Merge the 5 QC-filtered samples
 # =========================================================
-
 merged_qc <- merge(
   x = filtered_list[[1]],
   y = filtered_list[-1],
   add.cell.ids = names(filtered_list)
 )
-
 dim(merged_qc)
-
 merged_qc <- JoinLayers(merged_qc)
-
 
 # =========================================================
 # 6. Detect doublets using scDblFinder
 # =========================================================
-
 sce <- as.SingleCellExperiment(merged_qc)
-
 set.seed(100)
-
 sce <- scDblFinder(
   sce,
   samples = "orig.ident"
 )
 
-
 # =========================================================
 # 7. Add doublet results to Seurat object
 # =========================================================
-
 merged_qc$doublet_score <- colData(sce)$scDblFinder.score
 merged_qc$doublet_class <- colData(sce)$scDblFinder.class
-
 table(merged_qc$doublet_class)
-
 
 # =========================================================
 # 8. Remove doublets
 # =========================================================
-
 merged_singlets <- subset(
   merged_qc,
   subset = doublet_class == "singlet"
@@ -133,11 +157,9 @@ merged_singlets <- subset(
 
 ncol(merged_singlets)
 
-
 # =========================================================
 # 9. Normalization
 # =========================================================
-
 merged_singlets <- NormalizeData(
   merged_singlets,
   normalization.method = "LogNormalize",
@@ -148,7 +170,6 @@ merged_singlets <- NormalizeData(
 # =========================================================
 # 10. Find Variable Features
 # =========================================================
-
 merged_singlets <- FindVariableFeatures(
   merged_singlets,
   selection.method = "vst",
@@ -156,32 +177,23 @@ merged_singlets <- FindVariableFeatures(
 )
 
 VariableFeaturePlot(merged_singlets)
-
 head(VariableFeatures(merged_singlets), 10)
-
 plot1 <- VariableFeaturePlot(merged_singlets)
-
 top10 <- head(VariableFeatures(merged_singlets), 10)
-
 LabelPoints(
   plot = plot1,
   points = top10,
   repel = TRUE
 )
 
-
-
 # =========================================================
 # 11. Scale Data
 # =========================================================
-
 merged_singlets <- ScaleData(merged_singlets)
-
 
 # =========================================================
 # 12. PCA
 # =========================================================
-
 merged_singlets <- RunPCA(
   merged_singlets,
   features = VariableFeatures(merged_singlets)
@@ -212,11 +224,9 @@ ElbowPlot(
   ndims = 50
 )
 
-
 # =========================================================
 # 13. Harmony Integration
 # =========================================================
-
 merged_singlets <- RunHarmony(
   merged_singlets,
   group.by.vars = "orig.ident",
@@ -224,11 +234,9 @@ merged_singlets <- RunHarmony(
   theta = 4
 )
 
-
 # =========================================================
 # 14. Clustering & UMAP BEFORE Harmony
 # =========================================================
-
 merged_singlets <- FindNeighbors(
   merged_singlets,
   reduction = "pca",
@@ -257,7 +265,6 @@ DimPlot(
 # =========================================================
 # 15. Clustering & UMAP AFTER Harmony
 # =========================================================
-
 merged_singlets <- FindNeighbors(
   merged_singlets,
   reduction = "harmony",
@@ -287,11 +294,9 @@ DimPlot(
   group.by = "orig.ident"
 )
 
-
 # =========================================================
 # 16. t-SNE after Harmony integration
 # =========================================================
-
 merged_singlets <- RunTSNE(
   merged_singlets,
   reduction = "harmony",
@@ -312,11 +317,9 @@ DimPlot(
   group.by = "orig.ident"
 )
 
-
 # =========================================================
 # 17. Find marker genes for each cluster
 # =========================================================
-
 markers <- FindAllMarkers(
   merged_singlets,
   only.pos = TRUE,
@@ -335,7 +338,6 @@ print(top_markers, n = 80)
 # =========================================================
 # 18. Subclustering: Myeloid cluster
 # =========================================================
-
 myeloid_markers_check <- c("TREM2", "C1QB", "GPR34", "FOLR2", "C1QC")
 
 avg_expr <- AverageExpression(
@@ -379,15 +381,12 @@ myeloid <- RunPCA(
   features = VariableFeatures(myeloid)
 )
 
-
 ElbowPlot(
   myeloid,
   ndims = 30
 )
 
-
 n_dims <- 1:20
-
 
 myeloid <- RunHarmony(
   myeloid,
@@ -395,7 +394,6 @@ myeloid <- RunHarmony(
   dims.use = n_dims,
   theta = 4
 )
-
 
 myeloid <- FindNeighbors(
   myeloid,
@@ -414,7 +412,6 @@ myeloid <- RunUMAP(
   dims = n_dims
 )
 
-
 DimPlot(
   myeloid,
   reduction = "umap",
@@ -427,11 +424,9 @@ DimPlot(
   group.by = "orig.ident"
 )
 
-
 # =========================================================
 # 19. Find marker genes for each myeloid subcluster
 # =========================================================
-
 myeloid_markers <- FindAllMarkers(
   myeloid,
   only.pos = TRUE,
@@ -447,7 +442,6 @@ top_myeloid_markers <- myeloid_markers %>%
   )
 
 print(top_myeloid_markers, n = Inf)
-
 
 FeaturePlot(
   myeloid,
