@@ -75,23 +75,31 @@ Polarization dynamics and cell-state distributions were visualized through multi
 ### Results
 
 #### Data Loading
+Single-cell transcriptomic profiles were successfully loaded across all five brain metastasis specimens (BRBMET2, BRBMET3, BRBMET87, LUBMET7, and LUBMET1), generating independent initial Seurat objects for each dataset.
 
 #### Quality Control and Doublet Removal
+Sample-specific adaptive thresholding based on median absolute deviations effectively filtered out low-quality dying cells with high mitochondrial read content and unviable transcript counts. In silico doublet detection using scDblFinder identified and removed artificial cell multiplets from the merged dataset, yielding a clean singlet population for downstream integrative analyses.
 
 #### Normalization, Identification of Variable Features, and Scaling
+Log-normalization and variance-stabilizing transformation successfully identified 2,000 hypervariable genes across the singlet dataset. Linear scaling centered gene expression values appropriately across features, setting up the dataset for linear dimensional reduction.
 
 #### Principal Component Analysis (PCA)
+Principal component analysis effectively captured major biological axes of variation across the top dimensions. Inspection of the elbow plot confirmed that the top 30 principal components accounted for the majority of transcriptomic variance within the dataset.
 
 #### Harmony Integration
+Harmony integration effectively harmonized expression profiles across the five distinct metastasis samples. Inter-sample technical variation was successfully removed, placing equivalent biological cell states from different patients into shared coordinate spaces while preserving biological heterogeneity.
 
 #### Clustering
+Graph-based community detection at a resolution of 0.5 generated distinct cell clusters across the dataset. Comparative analysis demonstrated that clustering on Harmony-integrated dimensions yielded coherent cell groupings free from sample-specific batch artifacts compared to clustering on uncorrected PCA space.
 
-#### Visualization (UMAP and t-SNE)
+#### Clusters Visualization (UMAP and t-SNE)
+Both UMAP and t-SNE projections based on Harmony dimensions clearly resolved discrete cellular populations. Color-coding embeddings by sample identity (orig.ident) confirmed thorough inter-sample mixing across all shared clusters, whereas cluster-labeled projections demonstrated well-separated biological lineages.
 
 #### Identification of Clusters Marker Genes
+Differential expression testing with FindAllMarkers identified robust set-specific upregulated marker profiles for each cluster (padj < 0.05, log_2FC > 0.25). Extraction of top marker genes ranked by average log2 fold-change established clear cell-identity signatures defining each distinct parenchymal, immune, and stromal cluster.
 
 #### Identification and Sub-clustering of Myeloid Cells
-
+Expression profiling of canonical myeloid genes (TREM2, C1QB, GPR34, FOLR2, C1QC) unambiguously identified Cluster 0 as the primary myeloid lineage compartment. Re-clustering and sub-analysis of this isolated population following Harmony re-integration revealed distinct myeloid sub-clusters on UMAP projections. Differential marker analysis and feature plots confirmed distinct myeloid functional states—including C1QC/ C1QB/ TREM2/ FOLR2/ LYZ-positive macrophage and microglial subsets as well as MKI67-positive proliferating myeloid cells—while demonstrating complete absence of lymphoid lineage contaminants (CD3D, CD3E, NKG7, GNLY).
 
 
 #### Automated Annotation of the defined clusters
