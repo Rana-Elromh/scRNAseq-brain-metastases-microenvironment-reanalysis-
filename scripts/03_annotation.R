@@ -76,6 +76,15 @@ DimPlot(merged_singlets, reduction = "umap", group.by = "cell_type",
 #=============================================================================
 # 22. Create a heatmap and Check for NAs first
 # =============================================================================
+top_markers_heatmap <- markers %>%
+  filter(p_val_adj < 0.05) %>%
+  group_by(cluster) %>%
+  slice_max(order_by = avg_log2FC, n = 5) %>%
+  ungroup()
+
+genes_to_plot <- unique(top_markers_heatmap$gene)
+merged_singlets <- ScaleData(merged_singlets, features = genes_to_plot)
+
 sum(is.na(merged_singlets$cell_type))
 table(merged_singlets$cell_type, useNA = "always")
 cells_keep <- colnames(merged_singlets)[!is.na(merged_singlets$cell_type)]
