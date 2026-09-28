@@ -185,6 +185,10 @@ Functional enrichment analysis of macrophage polarization states confirmed disti
 
 #### Overall Communication Network using CellChat Model
 Aggregated network analysis revealed extensive crosstalk across all evaluated microenvironmental populations. Circular network visualizations demonstrated pronounced density in interaction counts and total interaction weights, particularly bridging fibroblast and macrophage subsets.
+https://github.com/Rana-Elromh/scRNAseq-brain-metastases-microenvironment-reanalysis-/blob/main/figures/04_Cell_Cell_Communication/33.2.1%20Circle%20Plot-Overall%20Communication%20Network/Aggregated_Interactions_Count.png
+![Aggregated Interactions Count](figures/04_Cell_Cell_Communication/33.2.1%20Circle%20Plot-Overall%20Communication%20Network/Aggregated_Interactions_Count.png)
+
+![Aggregated Interactions Count](figures/04_Cell_Cell_Communication/33.2.1%20Circle%20Plot-Overall%20Communication%20Network/Aggregated_Interactions_Strength.png)
 
 #### Specific Pathways Network Inference
 
