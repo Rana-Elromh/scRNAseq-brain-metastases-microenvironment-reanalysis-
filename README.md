@@ -162,7 +162,7 @@ Figure x. Global cellular landscape and marker gene expression in brain metastas
 #### Differential expression annotation of the Myeloid sub-clusters
 Sub-clustering restricted to the myeloid compartment further dissected four distinct sub-populations: Macrophages, Macrophage_MMP9_high_mito, Microglia, and type 2 conventional dendritic cells (cDC2).
 ![Aggregated Interactions Count](figures/02_Annotation/Myeloid_subtypes_and_states.png)
-Figure 9. Myeloid subtype characterization and M1/M2 polarization states.UMAP embedding of high-resolution sub-clustered myeloid populations identifying Macrophages, Macrophage_MMP9_high_mito, Microglia, and cDC2s.
+Figure x. Myeloid subtype characterization and M1/M2 polarization states.UMAP embedding of high-resolution sub-clustered myeloid populations identifying Macrophages, Macrophage_MMP9_high_mito, Microglia, and cDC2s.
 
 #### Determining, Annotation, and Visualizations of M1 and M2 states
 Module scoring for canonical pro-inflammatory (M1) versus anti-inflammatory/immunosuppressive (M2) transcriptional signatures revealed that microglia exhibit elevated baseline M1 score profiles compared to macrophages. 
