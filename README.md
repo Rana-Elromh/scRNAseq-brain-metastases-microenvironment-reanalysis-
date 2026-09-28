@@ -157,18 +157,22 @@ Differential expression analysis via FindAllMarkers identified robust gene expre
 
 https://github.com/Rana-Elromh/scRNAseq-brain-metastases-microenvironment-reanalysis-/blob/main/figures/02_Annotation/Cell_type_annotation.png
 ![Aggregated Interactions Count](figures/02_Annotation/Cell_type_annotation.png)
+Figure x. Global cellular landscape and marker gene expression in brain metastases. UMAP visualization of integrated single cells colored by major cell type annotations, encompassing malignant epithelial subsets, stromal populations, neuro-glial lineage, and immune compartments.   
 
 #### Differential expression annotation of the Myeloid sub-clusters
 Sub-clustering restricted to the myeloid compartment further dissected four distinct sub-populations: Macrophages, Macrophage_MMP9_high_mito, Microglia, and type 2 conventional dendritic cells (cDC2).
 ![Aggregated Interactions Count](figures/02_Annotation/Myeloid_subtypes_and_states.png)
-
+Figure 9. Myeloid subtype characterization and M1/M2 polarization states.UMAP embedding of high-resolution sub-clustered myeloid populations identifying Macrophages, Macrophage_MMP9_high_mito, Microglia, and cDC2s.
 
 #### Determining, Annotation, and Visualizations of M1 and M2 states
 Module scoring for canonical pro-inflammatory (M1) versus anti-inflammatory/immunosuppressive (M2) transcriptional signatures revealed that microglia exhibit elevated baseline M1 score profiles compared to macrophages. 
 Differential M1 minus M2 scoring projected across UMAP space highlighted continuous spatial gradients of polarization rather than discrete binary phenotypes. Quantitative proportion analysis confirmed that M1-like state activation predominated in both lineages, accounting for 85.4% of microglia and 50.7% of macrophages, whereas M2-like state polarization (24.5%) and intermediate states (24.9%) were substantially more prevalent within bone marrow-derived macrophages.
 ![Aggregated Interactions Count](figures/02_Annotation/M1_score_M2_score_plot.png)
+Figure x. Myeloid subtype characterization and M1/M2 polarization states. Violin plots showing module score distributions for M1 (left) and M2 (right) transcriptomic signatures across myeloid sub-types.   
 ![Aggregated Interactions Count](figures/02_Annotation/M_%20score_minus_M2_score.png)
+Figure x. Myeloid subtype characterization and M1/M2 polarization states. UMAP feature plot displaying the composite polarization score (M1 score minus M2 score), where positive values (blue) denote M1-like skewing and negative values (red) denote M2-like skewing.
 ![Aggregated Interactions Count](figures/02_Annotation/02_Annotation/Percentage_of_myeolid_cells.png)
+Figure x. Myeloid subtype characterization and M1/M2 polarization states. Stacked bar plot illustrating the relative proportion of M1-like, M2-like, and intermediate polarization states among Macrophage and Microglia lineages.
 
 
 #### Differential Expression Analysis and Volcano Plot Visualization
