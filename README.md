@@ -7,11 +7,11 @@ Brain metastases represent a major clinical challenge characterized by a highly 
 Brain metastases affect approximately 200,000 patients annually in the US, occurring ten times more frequently than primary brain tumors and carrying high mortality and recurrence rates. While advances in targeted therapies and radiosurgery have improved patient management, effective biomarkers and therapeutic targets remain urgently needed. Evidence indicates that the tumor microenvironment (TME) significantly dictates response to radiotherapy and overall survival, with pan-brain metastasis markers, such as type I collagen genes (COL1A1/COL1A2), playing key roles across diverse primary cancer origins. Leveraging single-cell RNA sequencing (scRNA-seq) on five brain metastasis samples, this study constructs a high-resolution cell landscape, identifying type I collagen-high tumor-associated fibroblasts (TAFs) as central mediators of TME intercellular communication. The findings suggest that $M1$ activation of resident microglia and infiltrating macrophages establishes a pro-inflammatory, wound-healing response that metastatic tumor cells hijack—driving excess collagen expression to remodel the brain niche into a hospitable microenvironment and offering novel predictive biomarkers and therapeutic targets for metastatic brain cancer and glioblastoma.
 
 ### Rationale
-
+We hypothesized that tumor-associated fibroblasts (TAFs) drives immunosuppressive and structural remodeling of the brain metastatic microenvironment by engaging in distinct ligand-receptor signaling crosstalk with M1 macrophage populations. We reasoned that high-resolution single-cell re-analysis and intercellular network modeling would resolve these specific communication axes, demonstrating that targeting this TAF–macrophage signaling circuit can disrupt pro-tumoral TME remodeling and reveal novel therapeutic vulnerabilities in human brain metastases.
 
 ### Input Data
-GEO? 
-Single-cell RNA sequencing data from five brain metastasis samples were loaded and processed using Seurat. The dataset included three breast cancer brain metastasis samples and two lung cancer brain metastasis samples.
+Single-cell RNA-seq data is available in the NCBI Gene expression Omnibus database (GEO) with accession number GSE234832.
+Data from five brain metastasis samples were loaded and processed using Seurat. The dataset included three breast cancer brain metastasis samples and two lung cancer brain metastasis samples.
 The samples were identified as:
 •	BRBMET2
 •	BRBMET3
@@ -71,6 +71,38 @@ Polarization states were categorized based on a threshold (= 0.1): cells with De
 #### Visualizations of M1 and M2 states
 Polarization dynamics and cell-state distributions were visualized through multiple complementary approaches: (1) UMAP projections of cell types split by polarization state (M1-like, M2-like, Intermediate); (2) UMAP feature plots displaying continuous Delta S values using a divergent color gradient (blue for M1-leaning, red for M2-leaning); (3) stacked bar charts (ggplot2) displaying the relative percentage distribution of M1-like, M2-like, and Intermediate states strictly within Macrophage and Microglia populations; and (4) sub-cluster UMAP feature maps paired with top marker heatmaps (top 5 markers per cluster, padj < 0.05).
 
+#### Differential Expression Analysis and Volcano Plot Visualization
+Differential expression analysis was performed using a two-sided Wilcoxon rank-sum test via the FindMarkers function in Seurat with a minimum cell fraction detection threshold (min.pct) of 0.1 and an absolute log2 fold-change threshold of 0. Differential expression results were categorized into significance tiers based on adjusted p-values calculated using the Benjamini-Hochberg false discovery rate (FDR) correction: highly significant (FDR < 0.01 and log_2FC > 1), significant (FDR < 0.05), or non-significant. Volcano plots were constructed using ggplot2 and ggrepel. To prevent visual distortion from extreme pvalues, -log10pvalues were capped at 300. For representative gene annotation, the top 12 upregulated and downregulated genes per contrast were selected based on adjusted pvalue and log2 fold-change filtering, excluding lowly expressed outliers (cell fraction < 0.1) and extreme fold-change fluctuations (log_2FC > 6).
+
+#### Functional Enrichment Analysis (GO, KEGG, Reactome)
+Directional functional enrichment analysis was conducted separately for significantly upregulated (log_2FC > 1, FDR < 0.05) and downregulated (log_2FC < -1, FDR < 0.05) genes. Gene symbols were mapped to Entrez Gene IDs using the org.Hs.eg.db R package via clusterProfiler::bitr. 
+Over-representation analysis (ORA) was executed across Gene Ontology (GO) categories—Biological Process (BP), Molecular Function (MF), and Cellular Component (CC), as well as Kyoto Encyclopedia of Genes and Genomes (KEGG) pathways using clusterProfiler, and Reactome pathways using ReactomePA. Multiple-testing adjustments were performed using the Benjamini-Hochberg method, with terms exhibiting an adjusted pvalue < 0.05 considered statistically enriched.
+
+#### Pathway Enrichment Visualization
+To facilitate intuitive comparison of biological themes across expression states, enriched functional terms were visualized using bidirectional diverging bar charts in ggplot2. The top 10 most significantly enriched terms (FDR < 0.05) for upregulated and downregulated gene sets were plotted along a continuous normalized axis. Enriched pathways associated with upregulated genes were represented along positive values, whereas downregulated pathways extended along negative values. To handle potential duplicate descriptions across categories, uniquely formatted labels were mapped back to their original term names while preserving factor ordering.
+
+#### Differential Expression and Pathway Enrichment of Fibroblasts
+Fibroblasts (pericyte/fibroblast cluster 11) were evaluated for differential gene expression against all remaining cell populations in the single-cell dataset using the Wilcoxon rank-sum test. Identified marker genes (FDR < 0.01, log_2FC > 1) were saved, and directional enrichment analysis was performed across REACTOME, KEGG, and GO ontologies (BP, MF, CC). Separate diverging bar plots were generated to visualize enriched biological functions characteristic of the fibroblast population.
+
+#### Differential Expression of M1-like vs. M2-like Macrophages
+Myeloid single-cell clusters were annotated and subsetted to isolate macrophages and microglia. Polarization module scores for M1-like and M2-like transcriptional signatures were computed per cell using AddModuleScore. Individual cells were categorized into polarization states based on the score differential (M1 - M2): M1-like (> 0.1), M2-like (< -0.1), or Intermediate. A direct differential expression contrast was then executed between M1-like macrophages (ident.1) and M2-like macrophages (ident.2) using the volcano plot.
+
+#### Pathway Enrichment Analysis of Macrophage Polarization States
+Genes differentially expressed between M1-like and M2-like macrophages (FDR < 0.05, log_2FC > 1) were subjected to ORA using clusterProfiler and ReactomePA. Biological enrichment patterns were evaluated across REACTOME pathways, KEGG pathways, and GO sub-ontologies. Enriched processes specific to M1-like (positive scores) versus M2-like (negative scores) states were displayed as diverging bar plots.
+
+#### CellChat Model Construction and Ligand-Receptor Database Mapping
+Single-cell transcriptomic profiles were integrated across datasets to focus on microenvironmental interaction dynamics. Myeloid sub-clusters annotated by functional polarization state replaced the myeloid cluster, followed by assay layer integration (JoinLayers) under the default RNA assay within Seurat. The dataset was subsequently filtered to isolate five key cell populations of interest: pericytes/fibroblasts (Pericyte_fibroblast), M1-like macrophages (Macrophage_M1-like), M2-like macrophages (Macrophage_M2-like), M1-like microglia (Microglia_M1-like), and M2-like microglia (Microglia_M2-like).
+
+Inferred cell-cell communication networks were reconstructed using the CellChat R package. Expression matrices and cell metadata annotations were extracted to initialize a CellChat object grouped by DEG_annotation. Human ligand-receptor interactions were assigned from CellChatDB.human. To optimize computational performance without altering signal detection, the expression matrix was subsetted (subsetData) to retain only genes corresponding to established ligands and receptors present within the curated database.
+
+#### Identification of Overexpressed Signal Pairs and Network Inference
+Overexpressed signaling genes across the defined cell clusters were identified using identifyOverExpressedGenes paired with presto-accelerated differential expression. Overexpressed ligand-receptor interactions were subsequently determined (identifyOverExpressedInteractions) by filtering for pairs in which both signaling partners demonstrated significant group-wise overexpression. Communication probabilities between cell clusters were calculated (computeCommunProb) using law of mass action modeling based on average ligand and receptor expression levels. Interactions originating from rare cell groups containing fewer than 10 cells were removed using filterCommunication to mitigate low-confidence observational noise.
+
+#### Pathway Communication Network Aggregation
+Individual ligand-receptor communication probabilities were aggregated to evaluate signaling strengths at the pathway level (computeCommunProbPathway). Total network interactions were synthesized using aggregateNet to generate cell-group interaction matrices corresponding to raw signaling counts and weighted communication probabilities (strength). In addition, cell-type-specific signaling subsets were generated by filtering communication outputs specifically for pericyte/fibroblast source populations (sources.use = "Pericyte_fibroblast").
+
+#### Network Visualization and Ligand-Receptor Interactions
+Macro-level communication structure was visualized using circular network plots (netVisual_circle) displaying total interaction counts and weighted interaction strengths across all cell groups. Enriched signaling pathways were extracted, and individual pathway networks were rendered into high-resolution circular plots using automated layout functions (netVisual_aggregate). Communication data frames containing inferred probabilities and significance metrics (p < 0.01) were extracted via subsetCommunication. Custom processing pipelines generated faceted dot plots visualizing communication probabilities across target cell pairs, evaluated both globally and specifically for fibroblast-directed interactions, while systematically comparing networks with and without self-communication.
 
 ### Results
 
@@ -131,6 +163,33 @@ Multi-modal visualization confirmed spatial and proportional segregation of myel
 
 - Subtype Expression Heatmap: Marker gene visualization confirmed top lineage markers defining each sub-cluster state without expression overlap.
 
+
+#### Differential Expression Analysis and Volcano Plot Visualization
+A customized volcano plot visualization framework effectively segregated statistically significant genes (FDR < 0.01 and log_2FC > 1) from minor or non-significant expression changes.
+
+#### Functional Enrichment Analysis (GO, KEGG, Reactome)
+Enrichment analysis of directionally separated differentially expressed genes revealed distinct functional programs governed by upregulated and downregulated gene cascades. Over-representation analysis across GO categories (BP, MF, CC), KEGG pathways, and Reactome pathways successfully identified significant biological terms (FDR < 0.05).
+
+#### Pathway Enrichment Visualization
+Bidirectional diverging bar plots provided a clear visual separation of upregulated and downregulated functional pathways. Terms associated with upregulated genes exhibited positive normalized enrichment scores, while downregulated pathways extended along negative values.
+
+#### Differential Expression and Pathway Enrichment of Fibroblasts
+Comparison of the fibroblast/pericyte population against all other cell types highlighted a localized transcriptomic signature enriched for extracellular matrix (ECM) remodeling and structural cell functions. Volcano plot analysis identified key upregulated fibroblast markers (FDR < 0.01, log_2FC > 1). Downstream functional profiling across REACTOME, KEGG, and GO sub-ontologies confirmed strong positive enrichment for biological processes related to collagen organization.
+
+#### Differential Expression of M1-like vs. M2-like Macrophages
+Transcriptional module scoring successfully stratified the macrophage cluster into distinct functional polarization states, including M1-like, M2-like, and intermediate sub-populations. Direct differential expression analysis contrasting M1-like against M2-like macrophages revealed clear marker separation. 
+
+#### Pathway Enrichment Analysis of Macrophage Polarization States
+Functional enrichment analysis of macrophage polarization states confirmed distinct metabolic and signaling profiles between M1-like and M2-like phenotypes. 
+
+
+#### Overall Communication Network using CellChat Model
+Aggregated network analysis revealed extensive crosstalk across all evaluated microenvironmental populations. Circular network visualizations demonstrated pronounced density in interaction counts and total interaction weights, particularly bridging fibroblast and macrophage subsets.
+
+#### Specific Pathways Network Inference
+
+#### Ligand-Receptor Interactions
+Detailed evaluation of ligand-receptor pairs (p < 0.01) demonstrated significant variation across target cell pairs. Dot plot visualizations showed that ..
 
 ### Discussion
 
