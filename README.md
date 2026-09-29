@@ -1,4 +1,4 @@
-# Uncovering Intercellular Communication Pathways Between Fibroblast and Myeloid Subclusters
+# *Uncovering Intercellular Communication Pathways Between Fibroblast and Myeloid Subclusters*
 
 ## Project Description
 Brain metastases represent a major clinical challenge characterized by a highly specialized tumor microenvironment (TME). To dissect the cellular architecture and intercellular cross-talk within this niche, this project presents a single-cell RNA sequencing (scRNA-seq) **re-analysis** of the human brain metastatic microenvironment. By integrating high-resolution single-cell transcriptomics with ligand-receptor network modeling, we systematically map the heterogeneous cell states and signaling crosstalk between specific tumor-associated fibroblast (TAF) cluster and M1 macrophage populations. Unraveling these specialized intercellular communication pathways provides critical insights into TME remodeling, offering prospective targets for therapeutic intervention and microenvironment-directed strategies.
@@ -111,6 +111,8 @@ Single-cell transcriptomic profiles were successfully loaded across all five bra
 
 #### Quality Control and Doublet Removal
 Sample-specific adaptive thresholding based on median absolute deviations effectively filtered out low-quality dying cells with high mitochondrial read content and unviable transcript counts. In silico doublet detection using scDblFinder identified and removed artificial cell multiplets from the merged dataset, yielding a clean singlet population for downstream integrative analyses.
+
+Quality control filtering and doublet removal of the single-cell RNA sequencing data yielded a robust dataset for downstream analysis. Initially, a total of 10,896 cells were processed before quality control, of which 7,158 cells successfully passed filtering criteria. Subsequent doublet detection identified and removed 323 doublets, resulting in a final high-quality dataset of 6,835 singlet cells retained for downstream clustering and cell type annotation.
 
 #### Normalization, Identification of Variable Features, and Scaling
 After normalisation, identification of highly variable features across the single-cell dataset yielded 2,000 highly variable genes out of 33,538 total detected features, with ACY3 and COL3A1 exhibiting the highest standardized variance.
