@@ -36,7 +36,6 @@ for (pkg in cran_pkgs) {
 }
 
 set.seed(42)
-
 #=============================================================================
 # 20. Automated Annotation of clusters
 #=============================================================================
@@ -118,7 +117,7 @@ merged_singlets <- ScaleData(merged_singlets, features = genes_to_plot)
 sum(is.na(merged_singlets$cell_type))
 table(merged_singlets$cell_type, useNA = "always")
 cells_keep <- colnames(merged_singlets)[!is.na(merged_singlets$cell_type)]
-DoHeatmap(
+p_heatmap <- DoHeatmap(
   merged_singlets,
   features = genes_to_plot,
   cells = cells_keep,
@@ -130,6 +129,7 @@ DoHeatmap(
 ) +
   scale_fill_gradientn(colors = c("navy", "white", "firebrick")) +
   theme(axis.text.y = element_text(size = 4, face = "bold"))
+ggsave("annotated-heatmap.png", plot = p_heatmap, width = 8, height = 6, dpi = 300)
 #===============================================================================
 # 23. Differential expression annotation of Myeloid sub-clusters
 #===============================================================================

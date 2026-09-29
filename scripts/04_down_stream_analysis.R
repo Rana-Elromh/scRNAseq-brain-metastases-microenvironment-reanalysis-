@@ -24,7 +24,7 @@
 
 # Install & Load Required Libraries
 ## List of CRAN/Bioconductor packages
-cran_pkgs <- c("ggrepel", "clusterProfiler", "org.Hs.eg.db", "ReactomePA", "stringr")
+cran_pkgs <- c("ggrepel", "clusterProfiler", "org.Hs.eg.db", "ReactomePA", "stringr", "ComplexHeatmap", "circlize")
 
 # Check, install missing *CRAN* packages, and load
 for (pkg in cran_pkgs) {
@@ -38,11 +38,14 @@ for (pkg in cran_pkgs) {
 # 27. Differential Expression Analysis and Volcano Plot Visualization
 # ---------------------------------------------------------
 
+# Volcano plot function (define once)
+# ------------------------------------------------------------
 run_volcano_plot <- function(seurat_obj, group_col, ident.1, ident.2 = NULL,
                              title = "Volcano Plot", label_n_each = 12,
                              pval_cap = 300, min_pct_label = 0.1,
-                             fc_label_cap = 6) {
+                             fc_label_cap = 6, theme_style = c("classic", "framed")) {
   
+  theme_style <- match.arg(theme_style)
   Idents(seurat_obj) <- group_col
   
   degs <- FindMarkers(
@@ -54,71 +57,70 @@ run_volcano_plot <- function(seurat_obj, group_col, ident.1, ident.2 = NULL,
   degs$category <- "Not significant"
   degs$category[degs$p_val_adj < 0.05] <- "FDR<0.05"
   degs$category[degs$p_val_adj < 0.01 & abs(degs$avg_log2FC) > 1] <- "FDR<0.01 & |log2FC|>1"
-  degs$category <- factor(
-    degs$category,
-    levels = c("FDR<0.01 & |log2FC|>1", "FDR<0.05", "Not significant")
-  )
+  degs$category <- factor(degs$category,
+                          levels = c("FDR<0.01 & |log2FC|>1", "FDR<0.05", "Not significant"))
   
-  degs$neglog10p <- -log10(degs$p_val)
-  was_capped <- max(degs$neglog10p, na.rm = TRUE) > pval_cap
+  degs$neglog10p      <- -log10(degs$p_val)
+  was_capped          <- max(degs$neglog10p, na.rm = TRUE) > pval_cap
   degs$neglog10p_plot <- pmin(degs$neglog10p, pval_cap)
   
-  # cap fold change just for the labeling step -- keeps label picks away from
-  # unstable, lowly-expressed extreme-FC outliers (the ones cluttering your plot)
+  # label only significant, well-expressed genes without extreme unstable fold changes
   sig <- degs %>%
-    filter(category == "FDR<0.01 & |log2FC|>1") %>%
-    filter(pct.1 > min_pct_label | pct.2 > min_pct_label) %>%   # expressed in a meaningful fraction of cells
-    filter(abs(avg_log2FC) < fc_label_cap)                       # drop extreme unstable FC from label picks
+    filter(category == "FDR<0.01 & |log2FC|>1",
+           pct.1 > min_pct_label | pct.2 > min_pct_label,
+           abs(avg_log2FC) < fc_label_cap)
   
-  # rank by significance (not raw FC) for label selection -- this is what
-  # the published plot does: labels go to genes that are both significant
-  # AND consistently expressed, not to lucky low-count outliers
-  top_up   <- sig %>% filter(avg_log2FC > 0) %>% arrange(p_val, desc(avg_log2FC)) %>% slice_head(n = label_n_each)
-  top_down <- sig %>% filter(avg_log2FC < 0) %>% arrange(p_val, avg_log2FC)       %>% slice_head(n = label_n_each)
-  top_labels <- bind_rows(top_up, top_down)
+  top_labels <- bind_rows(
+    sig %>% filter(avg_log2FC > 0) %>% arrange(p_val, desc(avg_log2FC)) %>% slice_head(n = label_n_each),
+    sig %>% filter(avg_log2FC < 0) %>% arrange(p_val, avg_log2FC)       %>% slice_head(n = label_n_each)
+  )
   
-  y_lab <- "-log10(p-value)"
-  if (was_capped) y_lab <- paste0(y_lab, "  [capped at ", pval_cap, "]")
+  y_lab <- if (was_capped) paste0("-log10(p-value)  [capped at ", pval_cap, "]") else "-log10(p-value)"
   
-  p <- ggplot(degs, aes(x = avg_log2FC, y = neglog10p_plot, color = category)) +
+  base_theme <- if (theme_style == "framed") {
+    theme_bw(base_size = 13) +
+      theme(panel.grid.minor = element_blank(),
+            panel.grid.major = element_line(color = "grey92", linewidth = 0.3),
+            panel.border     = element_rect(color = "black", fill = NA, linewidth = 0.6))
+  } else {
+    theme_classic(base_size = 13)
+  }
+  
+  p <- ggplot(degs, aes(avg_log2FC, neglog10p_plot, color = category)) +
     geom_point(alpha = 0.7, size = 0.9) +
-    scale_color_manual(values = c(
-      "FDR<0.01 & |log2FC|>1" = "red3",
-      "FDR<0.05" = "steelblue",
-      "Not significant" = "grey75"
-    )) +
-    geom_vline(xintercept = c(-1, 1), linetype = "dotted", color = "black", linewidth = 0.4) +
-    geom_hline(yintercept = -log10(0.05), linetype = "dotted", color = "black", linewidth = 0.4) +
-    geom_text_repel(
-      data = top_labels, aes(label = gene), size = 3, color = "black",
-      max.overlaps = Inf, box.padding = 0.4, point.padding = 0.2,
-      segment.size = 0.25, segment.color = "grey40",
-      min.segment.length = 0, force = 2, force_pull = 0.5,
-      max.iter = 20000, seed = 42
-    ) +
-    theme_classic(base_size = 13) +
+    scale_color_manual(values = c("FDR<0.01 & |log2FC|>1" = "red3",
+                                  "FDR<0.05"              = "steelblue",
+                                  "Not significant"       = "grey75")) +
+    geom_vline(xintercept = c(-1, 1), linetype = "dotted", linewidth = 0.4) +
+    geom_hline(yintercept = -log10(0.05), linetype = "dotted", linewidth = 0.4) +
+    geom_text_repel(data = top_labels, aes(label = gene), size = 3, color = "black",
+                    max.overlaps = Inf, box.padding = 0.4, point.padding = 0.2,
+                    segment.size = 0.25, segment.color = "grey40",
+                    min.segment.length = 0, force = 2, force_pull = 0.5,
+                    max.iter = 20000, seed = 42) +
+    base_theme +
     labs(title = title, x = "log2(Fold Change)", y = y_lab, color = NULL) +
-    theme(
-      plot.title = element_text(face = "bold", hjust = 0),
-      legend.position = "top",
-      legend.title = element_blank()
-    )
+    theme(plot.title = element_text(face = "bold", hjust = 0),
+          legend.position = "top", legend.title = element_blank())
   
   list(degs = degs, plot = p)
 }
 
-result <- run_volcano_plot(
-  seurat_obj = merged_singlets,      # or myeloid, whatever object has your fibroblast cluster
-  group_col  = "seurat_clusters",    # or "cell_type" if already annotated
-  ident.1    = "11",                 # your fibroblast cluster
+# ------------------------------------------------------------
+# Fibroblast vs rest
+# ------------------------------------------------------------
+fibro_res <- run_volcano_plot(
+  merged_singlets,
+  group_col = "cell_type",
+  ident.1   = "Pericyte_fibroblast",
+  title     = "Fibroblast (cluster 11) vs Rest"
 )
 
-print(result$plot)
-ggsave(
-  "fibroblast_volcano.png",
-  plot = result$plot,
-  width = 8, height = 7, dpi = 300
-)
+fibro_res$plot
+ggsave("fibroblast_volcano.png", plot = fibro_res$plot, width = 9, height = 7, dpi = 300)
+write.csv(fibro_res$degs, "fibroblast_DEGs.csv", row.names = FALSE)
+
+fibro_enrich <- run_enrichment_updown(fibro_res$degs)
 
 # ---------------------------------------------------------
 # 28. Directional Functional Enrichment Analysis (GO, KEGG, Reactome)
@@ -191,22 +193,8 @@ plot_enrichment_updown <- function(res_up, res_down, top_n = 10,
 
 
 # =========================================================
-# 30. Differential Expression and Pathway Enrichment of Fibroblasts
+# 30.Pathway Enrichment of Fibroblasts
 # =========================================================
-
-fibro_label <- "Pericyte_fibroblast"
-Idents(merged_singlets) <- "cell_type"
-
-fibro_res <- run_volcano_plot(
-  merged_singlets, group_col = "cell_type",
-  ident.1 = fibro_label, ident.2 = NULL,
-  title = "Fibroblast (cluster 11) vs Rest"
-)
-fibro_res$plot
-ggsave("fibroblast_volcano.png", plot = fibro_res$plot, width = 9, height = 7, dpi = 300)
-write.csv(fibro_res$degs, "fibroblast_DEGs.csv", row.names = FALSE)
-
-fibro_enrich <- run_enrichment_updown(fibro_res$degs)
 
 # REACTOME — up (orange) + down (blue) on one diverging plot
 p_reactome <- plot_enrichment_updown(fibro_enrich$reactome_up, fibro_enrich$reactome_down,
@@ -408,7 +396,14 @@ p_reactome <- plot_enrichment_updown(
   title = "REACTOME pathway (M1-like vs M2-like Macrophages)"
 )
 p_reactome
+
+# Extract genes associated with "Interleukin-10 signaling" from the REACTOME results
+reactome_df <- as.data.frame(enrich$reactome_up)
+il10_genes <- reactome_df[reactome_df$Description == "Interleukin-10 signaling", "geneID"]
+strsplit(il10_genes, "/")[[1]]
+
 ggsave("macrophage_REACTOME.png", plot = p_reactome, width = 8, height = 6, dpi = 300)
+
 
 # KEGG
 p_kegg <- plot_enrichment_updown(
@@ -476,3 +471,117 @@ print(p_go_cc)
 ggsave("macrophage_GO_BP.png", plot = p_go_bp, width = 8, height = 6, dpi = 300)
 ggsave("macrophage_GO_MF.png", plot = p_go_mf, width = 8, height = 6, dpi = 300)
 ggsave("macrophage_GO_CC.png", plot = p_go_cc, width = 8, height = 6, dpi = 300)
+
+#===========================================================
+# Sub_Title: "Transcription factor (TF) activity inference in myeloid states (decoupleR + DoRothEA)"
+# Before running: run scripts 01-03 so that the `myeloid` object exists with
+#                 `annotation_state`, `state`, and `cell_type_mm` in its metadata
+
+# =========================================================
+# 33. Load packages
+# =========================================================
+
+cran_pkgs <- c("Seurat", "decoupleR", "dorothea", "dplyr", "tidyr", "tibble",
+               "ggplot2", "patchwork", "pheatmap", "ggrepel")
+
+# =========================================================
+# 34. Prepare the TF-target network (same as tutorial)
+# =========================================================
+data(dorothea_hs, package = "dorothea")
+
+net <- dorothea_hs %>%
+  dplyr::filter(confidence %in% c("A", "B", "C")) %>%
+  dplyr::select(source = tf, target = target, mor = mor)
+
+head(net)
+
+# =========================================================
+# 35. Inspect the groups we will compare
+# =========================================================
+DefaultAssay(myeloid) <- "RNA"
+Idents(myeloid) <- "cell_type_mm"
+table(Idents(myeloid))
+
+DimPlot(myeloid, reduction = "umap", label = TRUE, repel = TRUE, pt.size = 0.5)
+
+# =========================================================
+# 36. Run ULM (per-cell TF activity) and store as a new assay
+# =========================================================
+# Seurat v5: use `layer`, not `slot`. Normalized (log) data, never raw counts.
+mat <- GetAssayData(myeloid, assay = "RNA", layer = "data")
+
+acts <- run_ulm(
+  mat     = mat,
+  net     = net,
+  .source = "source",
+  .target = "target",
+  .mor    = "mor",
+  minsize = 5
+)
+
+tf_activity <- acts %>%
+  dplyr::select(source, condition, score) %>%
+  tidyr::pivot_wider(names_from = condition, values_from = score) %>%
+  tibble::column_to_rownames("source")
+
+myeloid[["TF_activity"]] <- CreateAssay5Object(data = as.matrix(tf_activity))
+
+# =========================================================
+# 37. Mean TF activity per group + top variable TFs
+# =========================================================
+tf_mat <- t(as.matrix(GetAssayData(myeloid, assay = "TF_activity", layer = "data")))
+tf_df  <- as.data.frame(tf_mat)
+tf_df$group <- as.character(Idents(myeloid))
+
+# NOTE: the tutorial kept the "cluster" column inside tf_mean before calling sd();
+# here the group column is moved to rownames so only TF columns are ranked.
+
+tf_mat <- t(as.matrix(GetAssayData(myeloid, assay = "TF_activity", layer = "data")))
+
+tf_df <- as.data.frame(tf_mat)
+tf_df$group <- as.character(myeloid$annotation_state[rownames(tf_df)])
+
+# drop cells with no group
+tf_df <- tf_df[!is.na(tf_df$group), ]
+table(tf_df$group)
+
+tf_mean <- tf_df %>%
+  dplyr::group_by(group) %>%
+  dplyr::summarise(across(everything(), ~ mean(.x, na.rm = TRUE))) %>%
+  tibble::column_to_rownames("group")
+
+# 1. Check tf_mean looks right: rows = groups, columns = TFs
+dim(tf_mean)
+rownames(tf_mean)
+
+# 2. Create top_tfs
+top_tfs <- apply(tf_mean, 2, sd, na.rm = TRUE) %>%
+  sort(decreasing = TRUE) %>%
+  head(20) %>%
+  names()
+
+top_tfs
+
+# 3. Now plot
+
+m <- t(tf_mean[, top_tfs])
+
+col_fun <- colorRamp2(
+  seq(min(m), max(m), length.out = 7),
+  rev(RColorBrewer::brewer.pal(7, "RdYlBu"))
+)
+
+ht <- Heatmap(
+  m,
+  name             = "Mean activity",
+  col              = col_fun,
+  row_dend_side    = "right",   # dendrogram on the right
+  row_names_side   = "left",    # TF names on the left
+  column_names_rot = 45,
+  column_title     = "Top 20 variable TF activities (mean, raw)"
+)
+
+png("TF_activity_top20_raw.png", width = 8, height = 7, units = "in", res = 300)
+draw(ht)
+dev.off()
+
