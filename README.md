@@ -177,7 +177,13 @@ Differential expression analysis via FindAllMarkers identified robust gene expre
 
 ![Aggregated Interactions Count](figures/02_Annotation/Cell_type_annotation.png)
 
-Figure x. Global cellular landscape and marker gene expression in brain metastases. UMAP visualization of integrated single cells colored by major cell type annotations, encompassing malignant epithelial subsets, stromal populations, neuro-glial lineage, and immune compartments.   
+Figure x. Global cellular landscape and marker gene expression in brain metastases. UMAP visualization of integrated single cells colored by major cell type annotations, encompassing malignant epithelial subsets, stromal populations, neuro-glial lineage, and immune compartments. 
+
+####Heatmap for annotated clusters
+
+![Aggregated Interactions Count](figures/02_Annotation/Annotated-heatmap.png)
+
+Figure x. Heatmap displaying the top differentially expressed marker genes per cluster (FDR < 0.05, log_2FC > 0.25). Clusters are annotated with cell-type identities based on canonical marker expression.
 
 #### Differential expression annotation of the Myeloid sub-clusters
 Sub-clustering restricted to the myeloid compartment further dissected four distinct sub-populations: Macrophages, Macrophage_MMP9_high_mito, Microglia, and type 2 conventional dendritic cells (cDC2).
@@ -206,6 +212,10 @@ Figure x. Myeloid subtype characterization and M1/M2 polarization states. Stacke
 #### Differential Expression Analysis and Volcano Plot Visualization
 A customized volcano plot visualization framework effectively segregated statistically significant genes (FDR < 0.01 and log_2FC > 1) from minor or non-significant expression changes.
 
+![Aggregated Interactions Count](figures/03.1_Fibroblast_DEGS/Fibroblast_volcano.png)
+
+Figure x. Differential expression and functional enrichment of fibroblasts. Volcano plot displaying differentially expressed genes in fibroblasts (FDR < 0.01, log_2FC > 1) compared to all other cell types.
+
 #### Functional Enrichment Analysis (GO, KEGG, Reactome)
 Enrichment analysis of directionally separated differentially expressed genes revealed distinct functional programs governed by upregulated and downregulated gene cascades. Over-representation analysis across GO categories (BP, MF, CC), KEGG pathways, and Reactome pathways successfully identified significant biological terms (FDR < 0.05).
 
@@ -215,12 +225,43 @@ Bidirectional diverging bar plots provided a clear visual separation of upregula
 #### Differential Expression and Pathway Enrichment of Fibroblasts
 Comparison of the fibroblast/pericyte population against all other cell types highlighted a localized transcriptomic signature enriched for extracellular matrix (ECM) remodeling and structural cell functions. Volcano plot analysis identified key upregulated fibroblast markers (FDR < 0.01, log_2FC > 1). Downstream functional profiling across REACTOME, KEGG, and GO sub-ontologies confirmed strong positive enrichment for biological processes related to collagen organization.
 
+![Aggregated Interactions Count](figures/03.1_Fibroblast_DEGS/Fibroblast_GO_CC.png)
+ Figure x. Differential expression and functional enrichment of fibroblasts. Diverging bar plot showing enriched GO Cellular Component (CC) terms for upregulated (positive values) and downregulated (negative values) genes in fibroblasts.
+ 
+![Aggregated Interactions Count](figures/03.1_Fibroblast_DEGS/Fibroblast_KEGG.png)
+
+Figure x. Differential expression and functional enrichment of fibroblasts. Diverging bar plot showing enriched KEGG pathways for upregulated (positive values) and downregulated (negative values) genes in fibroblasts.
+
+![Aggregated Interactions Count](figures/03.1_Fibroblast_DEGS/Fibroblast_REACTOME.png)
+
+Figure x. Differential expression and functional enrichment of fibroblasts. Diverging bar plot showing enriched REACTOME pathways for upregulated (positive values) and downregulated (negative values) genes in fibroblasts.
+
+
 #### Differential Expression of M1-like vs. M2-like Macrophages
 Transcriptional module scoring successfully stratified the macrophage cluster into distinct functional polarization states, including M1-like, M2-like, and intermediate sub-populations. Direct differential expression analysis contrasting M1-like against M2-like macrophages revealed clear marker separation. 
+
+![Aggregated Interactions Count](figures/03.2_Macrophage_DEGS/Macrophage_M1_vs_M2_volcano_framed.png)
+
+Figure x. Differential expression and functional enrichment of macrophage polarization states. Volcano plot displaying differentially expressed genes between M1-like and M2-like macrophages (FDR < 0.05, log_2FC > 1).
 
 #### Pathway Enrichment Analysis of Macrophage Polarization States
 Functional enrichment analysis of macrophage polarization states confirmed distinct metabolic and signaling profiles between M1-like and M2-like phenotypes. 
 
+![Aggregated Interactions Count](figures/03.2_Macrophage_DEGS/M1_Macrophage_GO_CC.png)
+
+Figure x. Differential expression and functional enrichment of macrophage polarization states. Diverging bar plot showing enriched GO Cellular Component (CC) terms for upregulated (positive values) and downregulated (negative values) genes in M1-like versus M2-like macrophages.
+
+![Aggregated Interactions Count](figures/03.2_Macrophage_DEGS/M1_Macrophage_KEGG.png)
+Figure x. Differential expression and functional enrichment of macrophage polarization states. Diverging bar plot showing enriched KEGG pathways for upregulated (positive values) and downregulated (negative values) genes in M1-like versus M2-like macrophages.
+
+![Aggregated Interactions Count](figures/03.2_Macrophage_DEGS/M1_Macrophage_REACTOME.png)
+
+Figure x. Differential expression and functional enrichment of macrophage polarization states. Diverging bar plot showing enriched REACTOME pathways for upregulated (positive values) and downregulated (negative values) genes in M1-like versus M2-like macrophages.
+
+####Transcriptional Module Scoring of M1-like vs. M2-like Macrophages
+![Aggregated Interactions Count](figures/TFs/TF_activity_top20_raw.png)
+
+Figure x. Transcription factor activity analysis of macrophage polarization states. Heatmap displaying the top 20 transcription factors with differential activity between M1-like and M2-like macrophages, inferred from regulon analysis.
 
 #### Overall Communication Network using CellChat Model
 Aggregated cell-cell communication analysis across all signaling pathways revealed extensive crosstalk among microenvironmental cell populations. Overall interaction counts and weights were heavily dominated by bidirectional signaling between Macrophage_M1-like and Macrophage_M2-like subsets. Pericyte_fibroblasts additionally exhibited robust paracrine communication with both macrophage polarization states, whereas Microglia populations displayed comparatively fewer total interactions across the network
@@ -252,7 +293,65 @@ Detailed evaluation of ligand-receptor pairs (p < 0.01) demonstrated significant
 
 Figure x. Fibroblast-centric ligand-receptor communication landscape.Faceted dot plot displaying significant (p < 0.01) ligand-receptor interactions originating from Pericyte_fibroblasts across target recipient cell types. Color intensity represents communication probability. Collagen and Midkine signaling demonstrate selective SDC4 receptor engagement in M1-like macrophages compared to CD44-predominant binding in M2-like macrophages.
 
-
 ### Discussion
 
-### Conclusion
+#### 1. Hypothesis and how the results were used to test it
+
+We hypothesized that tumor-associated fibroblasts (TAFs) contribute to structural and immunoregulatory remodeling of the brain metastatic microenvironment through distinct ligand-receptor crosstalk with M1-like macrophages. This hypothesis makes three testable predictions:
+
+1. Fibroblasts have a matrix-remodeling phenotype and are a source of stromal ligands.
+2. M1-like macrophages have an activated inflammatory program and express receptors able to receive those ligands.
+3. Fibroblast-to-M1 interactions are distinct from those directed to M2-like macrophages, are strong enough to be plausible drivers of the M1 state, and include at least some immunoregulatory signals.
+
+Predictions 1 and 2 were clearly supported and agree with Song et al. (2023). Prediction 3 was only partly supported: we found a small set of interactions restricted to M1-like macrophages (SDC4-based), but they had low predicted communication probabilities.The data therefore support a fibroblast-M1 axis as a *candidate*, but do not show that fibroblasts shape the M1 state.
+
+#### 2. Fibroblasts are matrix-remodeling cells and a major source of stromal ligands (Prediction 1)
+
+The pericyte/fibroblast cluster was defined by extracellular matrix (ECM) genes. Its upregulated genes were enriched for ECM organization, collagen formation, collagen degradation, elastic fibre formation, integrin cell-surface interactions (Reactome), ECM-receptor interaction, focal adhesion and PI3K-Akt signaling (KEGG), and the extracellular matrix, basement membrane, collagen trimer and focal adhesion (GO-CC). Downregulated terms mainly reflected epithelial/tumor and immune programs (EPCAM, CLDN3, CD24, neutrophil degranulation, mammary lineage terms), which is expected when a stromal cluster is compared against all other cells. This matches Song et al., who described type I collagen-high fibroblasts enriched for ECM organization and collagen formation, and also identified TIMP3 among their upregulated genes; TIMP3 was among the top labeled genes in our fibroblast volcano plot as well. Because the fibroblasts express collagens, laminins (LAMA4/LAMA5), MDK, MIF and APP, they are well placed to act as senders toward the myeloid compartment.
+
+#### 3. M1-like macrophages carry a TLR/NF-κB-driven cytokine and chemokine program (Prediction 2)
+
+**Cytokines, chemokines and pathways.** In the direct M1-like versus M2-like macrophage comparison, TNF, IL1B, CCL3L1, CCL4L2, NFKBIA and C3 were higher in M1-like cells, while CD163, MRC1, STAB1, CD209, LYVE1, F13A1 and COLEC12 were higher in M2-like cells. KEGG enrichment was led by Toll-like receptor signaling and NF-κB signaling, and Reactome enrichment by IL-1 signaling, IL-1 family signaling, signaling by interleukins, TRAF6-mediated NF-κB activation, non-canonical inflammasome activation, pyroptosis, ZBP1-mediated NF-κB/type I interferon induction and cell recruitment (pro-inflammatory response). Binding and uptake of ligands by scavenger receptors (Reactome) and phagocytosis (KEGG) were the main downregulated terms, in line with the M2-like/scavenging profile. This agrees with Song et al., who reported elevated IL-1B, TNF, CCL3 and CCL4 (and CCL5) in myeloid cells and interpreted this as M1 activation. Our contribution is that this inflammatory program can be resolved at the level of M1-like versus M2-like macrophages and separated from microglia.
+
+Two points need care when reading these terms. First, the Reactome term "Interleukin-10 signaling" appears among the enriched terms. Its gene set contains many NF-κB-dependent cytokines and chemokines (for example TNF, IL1B, CCL3, CCL4), so its enrichment is best read as an inflammatory gene program, possibly with some IL-10 feedback, and not as evidence of anti-inflammatory activity; the modest STAT3 activity in the TF analysis (below) is consistent with this reading. Second, disease-named KEGG terms (Chagas disease, Legionellosis, Leishmaniasis, cytomegalovirus and herpes simplex infection) reflect shared innate immune genes, not the presence of these infections.
+
+**Transcription factors.** Inferred TF activity supported the same picture. NFKB1 and RELA were among the most active TFs, with the highest mean activity in M1-like macrophages, followed by intermediate and M2-like macrophages; AP-1 family members (JUN, JUNB, FOS, ATF2), HIF1A, SPI1 (PU.1) and MYC were also high in macrophages. RFX5, the regulator of MHC class II genes, was the most active TF and fits the HLA-DRA-high, antigen-presenting phenotype. NF-κB and AP-1 are the canonical downstream effectors of TLR/MAPK signaling, which links the TF result directly to the KEGG and Reactome findings and to NFKBIA (an NF-κB target) among the top M1-like genes. 
+
+#### 4. Fibroblast-to-M1 communication (Prediction 3)
+
+**A shared stromal-myeloid axis (APP and MIF to CD74).** The strongest fibroblast-derived interactions were APP-CD74 and, at lower probability, MIF-(CD74+CD44) and MIF-(CD74+CXCR4), followed by APP-(TREM2+TYROBP). They were present in M1-like and M2-like macrophages and in both microglia states, so they show that fibroblasts communicate strongly with myeloid cells in general but do not distinguish M1 from M2. MIF is a pro-inflammatory, chemokine-like cytokine that promotes macrophage retention and can activate NF-κB and ERK signaling through CD74/CD44, and CXCR4 signaling adds a recruitment component; this is compatible with the chemokine and NF-κB signatures above, but compatibility is not proof of causation. Two technical points also apply: CD74 is highly expressed by all antigen-presenting myeloid cells, and APP is broadly expressed, and because CellChat scores depend on expression levels, high expression alone can produce high probabilities. APP-CD74 is also less well characterized functionally than MIF-CD74.
+
+**M1-restricted interactions (SDC4).** COL1A1-, COL6A1- and COL9A3-SDC4 and MDK-SDC4 appeared in the fibroblast-to-M1-like macrophage column and not in the M2-like macrophage column, which is the most direct support for a distinct fibroblast-M1 axis. SDC4 is induced by TLR/NF-κB signaling, and it can act as an ECM co-receptor whose cytoplasmic tail links to PKCα, cytoskeletal and adhesion signaling; it could therefore help stabilize or fine-tune the inflammatory state and anchor M1-like cells in fibroblast-rich stroma. Song et al. described SDC1, SDC4 and CD44 as fibroblast-collagen receptors on *tumor cells*; finding SDC4 on M1-like macrophages is new. However, all of these SDC4 interactions sit at the lowest end of the probability scale. The fact that three collagens point to one receptor reflects that collagens are co-expressed and share the same database entries, which shows consistency of an ECM-SDC4 axis but is not a measure of strength. Direct collagen-SDC4 binding is also less well characterized than fibronectin-SDC4 or MDK-SDC4 binding, so these should be presented as predictions.
+
+**CD44-mediated ECM signaling.** Collagen (COL1A1, COL6A1, COL9A3) and laminin (LAMA5) signaling to CD44 reached all four myeloid populations, again with low probability. This replicates the observation of Song et al. that fibroblast-myeloid communication is mainly CD44-based, and it suggests that CD44 is the general ECM receptor of the myeloid compartment while SDC4 is an M1-associated addition.
+
+#### 5. Agreement with Song et al. and what is new
+
+![Aggregated Interactions Count](figures/Agreement with Song et al. and what is new.png)
+
+Table x. This table displays the  Agreement with Song et al. and what are the new discoveries.
+ 
+Two differences from Song et al. should be noted. They treated myeloid cells as one population and inferred M1 activation from cytokine expression, while we scored individual cells and split them into M1-like, M2-like and intermediate states. In addition, they list TGFB1 among M1 hallmark genes, whereas we included TGFB1 in the M2 gene set; marker definitions for M1/M2 differ between studies.
+
+#### 6. Does the evidence support the hypothesis?
+
+- **Supported:** fibroblasts are a matrix-remodeling, ligand-rich population (Prediction 1), and M1-like macrophages have a TLR/NF-κB-driven cytokine/chemokine program (Prediction 2).
+- **Partly supported:** a distinct set of fibroblast interactions is associated with M1-like cells (SDC4- and PTGER4-based), and one of them (PGE2-EP4) is potentially immunoregulatory.
+- **Not supported (yet):** the claim that fibroblasts *drive or reshape* the M1 state. The M1-restricted interactions were weak, the strong ones were shared with M2-like cells, and the M1 program is explained well by intrinsic TLR/NF-κB activity.
+
+#### 7. Limitations
+
+1. **Small dataset.** Five patients (three breast, two lung, all female) and a myeloid compartment of limited size. Rare states, and the M1-like macrophage group in particular, contain few cells, and the number of significant DEGs for M1-like versus M2-like macrophages was small, which limits pathway enrichment power.
+2. **Weak predicted interactions.** The M1-restricted interactions had low communication probabilities, so they cannot be taken as evidence that fibroblasts reshape M1 macrophages. A low CellChat score is a low-confidence prediction, not proof of unimportance, but it should not be over-interpreted.
+3. **Restricted cell-type set.** CellChat was run on only five populations, with fibroblasts as the only sender. Other cell types that could shape M1 polarization (tumor cells, T/NK cells producing IFN-γ, endothelial cells, other myeloid cells, oligodendrocytes, B/plasma cells) were not included, so we cannot say whether fibroblasts are stronger or weaker inducers than these senders.
+4. **Direction not tested.** Song et al. propose that M1-activated myeloid cells induce collagen expression in fibroblasts. We analysed fibroblast-to-myeloid signals only, so the reverse direction remains untested.
+5. **Prediction, not measurement.** CellChat and decoupleR infer communication and TF activity from mRNA. There is no protein, spatial or functional validation, and large insoluble ligands such as collagens are poorly represented by expression-based scores.
+6. **Definition of M1-like/M2-like.** The classification uses a small marker set with an arbitrary threshold (±0.1). Several M1 genes (TNF, IL1B, HLA-DRA) are also used to define the states, so part of the DEG and pathway result is expected by construction, and 85.4% of microglia are called M1-like, which suggests that the score partly reflects baseline microglial expression. The M1/M2 dichotomy is also a simplification, since macrophages in tumors occupy a continuum. The macrophage_MMP9_high_mito subcluster was merged with macrophages and may include stressed cells.
+7. **Statistics.** Wilcoxon tests treat cells as independent replicates, which can inflate significance because cells from the same patient are correlated. Sample-aware (pseudobulk) testing would be more conservative.
+
+
+####Conclusion
+
+Overall, our re-analysis reproduces the central findings of Song et al. (a collagen-rich fibroblast population and a pro-inflammatory myeloid compartment) and adds new candidate features: an M1-restricted fibroblast-SDC4 axis, and a shared MIF/APP-CD74 axis, together with a TLR/NF-κB TF signature in M1-like macrophages.
+
+![Aggregated Interactions Count](figures/Graphical-abstract.png)
