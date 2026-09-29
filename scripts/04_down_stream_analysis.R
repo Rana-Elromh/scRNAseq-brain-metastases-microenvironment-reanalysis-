@@ -17,22 +17,57 @@
 # 28. Functional Enrichment Analysis (GO, KEGG, Reactome)
 # 29. Pathway Enrichment Visualization
 # 30. Differential Expression and Pathway Enrichment of Fibroblasts
-# 31. Differential Expression of M1-like vs. M2-like Macrophages
-# 32. Pathway Enrichment Analysis of Macrophage Polarization States
+# 31.A. Differential Expression of M1-like vs. M2-like Macrophages
+# 31.B. Pathway Enrichment Analysis of Macrophage Polarization States
+# 32. Transcription factor (TF) activity inference in myeloid states
 
 
 
 # Install & Load Required Libraries
-## List of CRAN/Bioconductor packages
-cran_pkgs <- c("ggrepel", "clusterProfiler", "org.Hs.eg.db", "ReactomePA", "stringr", "ComplexHeatmap", "circlize")
 
-# Check, install missing *CRAN* packages, and load
+# Ensure BiocManager is available
+if (!requireNamespace("BiocManager", quietly = TRUE)) {
+  install.packages("BiocManager")
+}
+
+# Install:
+BiocManager::install("reactome.db", update = FALSE, ask = FALSE)
+library(reactome.db)
+
+# 1. Define package lists
+cran_pkgs <- c(
+  "Seurat", "dplyr", "tidyr", "tibble",
+  "ggplot2", "patchwork", "pheatmap", "ggrepel", 
+  "stringr", "circlize"
+)
+
+bioc_pkgs <- c(
+  "decoupleR", "clusterProfiler", "org.Hs.eg.db", "ReactomePA", 
+  "ComplexHeatmap", "dorothea"
+)
+
+# 2. Check, install, and load CRAN packages
 for (pkg in cran_pkgs) {
   if (!requireNamespace(pkg, quietly = TRUE)) {
     install.packages(pkg)
   }
   library(pkg, character.only = TRUE)
 }
+
+# 3. Ensure BiocManager is available for Bioconductor packages
+if (!requireNamespace("BiocManager", quietly = TRUE)) {
+  install.packages("BiocManager")
+}
+
+# 4. Check, install, and load Bioconductor packages (including decoupleR)
+for (pkg in bioc_pkgs) {
+  if (!requireNamespace(pkg, quietly = TRUE)) {
+    BiocManager::install(pkg, update = FALSE, ask = FALSE)
+  }
+  library(pkg, character.only = TRUE)
+}
+
+library(ReactomePA)
 
 # ---------------------------------------------------------
 # 27. Differential Expression Analysis and Volcano Plot Visualization
@@ -120,8 +155,6 @@ fibro_res$plot
 ggsave("fibroblast_volcano.png", plot = fibro_res$plot, width = 9, height = 7, dpi = 300)
 write.csv(fibro_res$degs, "fibroblast_DEGs.csv", row.names = FALSE)
 
-fibro_enrich <- run_enrichment_updown(fibro_res$degs)
-
 # ---------------------------------------------------------
 # 28. Directional Functional Enrichment Analysis (GO, KEGG, Reactome)
 # ---------------------------------------------------------
@@ -152,6 +185,7 @@ run_enrichment_updown <- function(degs, pval_cutoff = 0.05, logfc_cutoff = 1) {
   )
 }
 
+fibro_enrich <- run_enrichment_updown(fibro_res$degs)
 
 # ---------------------------------------------------------
 # 29. Pathway Enrichment Visualization
@@ -232,7 +266,7 @@ ggsave("Fibroblast_GO_MF.png", plot = p_go_mf, width = 8, height = 6, dpi = 300)
 ggsave("Fibroblast_GO_CC.png", plot = p_go_cc, width = 8, height = 6, dpi = 300)
 
 # ======================================================================================
-# 31. Differential Expression of M1-like vs. M2-like Macrophages
+# 31.A. Differential Expression of M1-like vs. M2-like Macrophages
 # ======================================================================================
 # 1. Define/update the function (paste this in first)
 run_volcano_plot <- function(seurat_obj, group_col, ident.1, ident.2 = NULL,
@@ -304,7 +338,7 @@ run_volcano_plot <- function(seurat_obj, group_col, ident.1, ident.2 = NULL,
   list(degs = degs, plot = p)
 }
 
-# 1. myeloid_subtype
+# myeloid_subtype
 myeloid_labels <- c(
   "0" = "Macrophage",
   "1" = "Macrophage_MMP9_high_mito",
@@ -319,7 +353,7 @@ Idents(myeloid) <- "myeloid_subtype"
 table(myeloid$myeloid_subtype)
 
 
-# 2. M1_score1 / M2_score1
+# M1_score1 / M2_score1
 m1_genes <- c("CD80","CD86","TNF","IL1B","IL6","IL12A","IL12B","CXCL9","CXCL10",
               "CXCL11","NOS2","STAT1","IRF5","FCGR1A","IDO1","CCL5","HLA-DRA")
 m2_genes <- c("CD163","MRC1","MSR1","IL10","TGFB1","ARG1","CCL18","CCL22",
@@ -332,7 +366,7 @@ myeloid <- AddModuleScore(myeloid, features = list(m1_genes), name = "M1_score")
 myeloid <- AddModuleScore(myeloid, features = list(m2_genes), name = "M2_score")
 
 
-# 3. cell_type_mm, state, annotation_state
+# cell_type_mm, state, annotation_state
 myeloid$cell_type_mm <- dplyr::case_when(
   myeloid$myeloid_subtype == "Microglia" ~ "Microglia",
   myeloid$myeloid_subtype %in% c("Macrophage", "Macrophage_MMP9_high_mito") ~ "Macrophage",
@@ -354,7 +388,7 @@ myeloid$annotation_state <- ifelse(
 
 table(myeloid$annotation_state)
 
-# 3. Call it on your macrophage comparison
+# Call it on macrophage comparison
 macrophage_res <- run_volcano_plot(
   myeloid,
   group_col = "annotation_state",
@@ -385,7 +419,7 @@ ggsave("macrophage_M1_vs_M2_volcano_framed.png",
        plot = macrophage_res$plot, width = 9, height = 7, dpi = 300)
 write.csv(macrophage_res$degs, "Macrophage_M1_vs_M2_DEGs.csv", row.names = FALSE)
 #===============================================================
-# 32. Pathway Enrichment Analysis of Macrophage Polarization States
+# 31.B. Pathway Enrichment Analysis of Macrophage Polarization States
 # ===============================================================
 
 enrich <- run_enrichment_updown(macrophage_res$degs)
@@ -473,19 +507,11 @@ ggsave("macrophage_GO_MF.png", plot = p_go_mf, width = 8, height = 6, dpi = 300)
 ggsave("macrophage_GO_CC.png", plot = p_go_cc, width = 8, height = 6, dpi = 300)
 
 #===========================================================
-# Sub_Title: "Transcription factor (TF) activity inference in myeloid states (decoupleR + DoRothEA)"
-# Before running: run scripts 01-03 so that the `myeloid` object exists with
-#                 `annotation_state`, `state`, and `cell_type_mm` in its metadata
-
-# =========================================================
-# 33. Load packages
+# 32. Transcription factor (TF) activity inference in myeloid states
 # =========================================================
 
-cran_pkgs <- c("Seurat", "decoupleR", "dorothea", "dplyr", "tidyr", "tibble",
-               "ggplot2", "patchwork", "pheatmap", "ggrepel")
-
 # =========================================================
-# 34. Prepare the TF-target network (same as tutorial)
+# 32.1. Prepare the TF-target network
 # =========================================================
 data(dorothea_hs, package = "dorothea")
 
@@ -496,7 +522,7 @@ net <- dorothea_hs %>%
 head(net)
 
 # =========================================================
-# 35. Inspect the groups we will compare
+# 32.2. Inspect the groups we will compare
 # =========================================================
 DefaultAssay(myeloid) <- "RNA"
 Idents(myeloid) <- "cell_type_mm"
@@ -505,7 +531,7 @@ table(Idents(myeloid))
 DimPlot(myeloid, reduction = "umap", label = TRUE, repel = TRUE, pt.size = 0.5)
 
 # =========================================================
-# 36. Run ULM (per-cell TF activity) and store as a new assay
+# 32.3 Run ULM (per-cell TF activity) and store as a new assay
 # =========================================================
 # Seurat v5: use `layer`, not `slot`. Normalized (log) data, never raw counts.
 mat <- GetAssayData(myeloid, assay = "RNA", layer = "data")
@@ -527,14 +553,11 @@ tf_activity <- acts %>%
 myeloid[["TF_activity"]] <- CreateAssay5Object(data = as.matrix(tf_activity))
 
 # =========================================================
-# 37. Mean TF activity per group + top variable TFs
+# 32.4 Mean TF activity per group + top variable TFs
 # =========================================================
 tf_mat <- t(as.matrix(GetAssayData(myeloid, assay = "TF_activity", layer = "data")))
 tf_df  <- as.data.frame(tf_mat)
 tf_df$group <- as.character(Idents(myeloid))
-
-# NOTE: the tutorial kept the "cluster" column inside tf_mean before calling sd();
-# here the group column is moved to rownames so only TF columns are ranked.
 
 tf_mat <- t(as.matrix(GetAssayData(myeloid, assay = "TF_activity", layer = "data")))
 
@@ -550,11 +573,11 @@ tf_mean <- tf_df %>%
   dplyr::summarise(across(everything(), ~ mean(.x, na.rm = TRUE))) %>%
   tibble::column_to_rownames("group")
 
-# 1. Check tf_mean looks right: rows = groups, columns = TFs
+# Check tf_mean looks right: rows = groups, columns = TFs
 dim(tf_mean)
 rownames(tf_mean)
 
-# 2. Create top_tfs
+# Create top_tfs
 top_tfs <- apply(tf_mean, 2, sd, na.rm = TRUE) %>%
   sort(decreasing = TRUE) %>%
   head(20) %>%
@@ -562,7 +585,7 @@ top_tfs <- apply(tf_mean, 2, sd, na.rm = TRUE) %>%
 
 top_tfs
 
-# 3. Now plot
+# plot
 
 m <- t(tf_mean[, top_tfs])
 

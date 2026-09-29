@@ -225,11 +225,11 @@ mm_cells <- myeloid@meta.data %>%
 
 mm_summary <- mm_cells %>%
   dplyr::count(cell_type_mm, state) %>%
-  count(cell_type_mm, state) %>%
-  group_by(cell_type_mm) %>%
-  mutate(pct = n / sum(n) * 100,
-         label = paste0(round(pct, 1), "%"))
-
+  dplyr::group_by(cell_type_mm) %>%
+  dplyr::mutate(
+    pct = n / sum(n) * 100,
+    label = paste0(round(pct, 1), "%")
+  )
 ggplot(mm_summary, aes(x = cell_type_mm, y = n, fill = state)) +
   geom_bar(stat = "identity", position = "fill") +
   geom_text(aes(label = label),

@@ -94,7 +94,7 @@ process_lr_interactions <- function(cellchat_obj, exclude_self = FALSE, file_pre
   # Visualisations of LR interactions *with* pathways
   plot_data_with_pathways <- lr_results %>%
     mutate(Cell_pair = paste(source, "->", target)) %>%
-    filter(pval < 0.01) 
+    filter(pval < 0.01) %>%
   # %>% #Uncomment these 2 lines for fibroblast only visualisations
   #   filter(source == "Pericyte_fibroblast") %>% 
     mutate(pathway_label = paste(pathway_name, "Pathway through", annotation)) %>%
