@@ -117,18 +117,25 @@ After normalisation, identification of highly variable features across the singl
 
 ![Aggregated Interactions Count](figures/01_Preprocessing_and_Clustering/02_Labeled%20VariableFeaturePlot.png)
 
-Figure x. Variable feature selection and principal component analysis. Variance plot showing 2,000 highly variable genes (red) selected from 33,538 total detected genes, with top variable genes labeled (ACY3, COL3A1).
+Figure 1. Variable feature selection and principal component analysis. Variance plot showing 2,000 highly variable genes (red) selected from 33,538 total detected genes, with top variable genes labeled (ACY3, COL3A1).
 #### Principal Component Analysis (PCA)
 Principal component analysis effectively captured major biological axes of variation across the top dimensions. Principal component analysis (PCA) based on these variable genes revealed distinct sample-level driver patterns along the major axes of variation. PC_1 clearly separated LUBMET1 samples along the negative axis from BRBMET87 samples aligned along positive PC_2, while BRBMET2, BRBMET3, and LUBMET7 populated intermediate distribution spaces. Top loading genes driving PC_1 highlighted opposing transcriptional profiles, with oligodendrocyte- and CNS-associated markers (PLP1, TF, MOG, APLP1, CARNS1, NKX6-2, STMN4, ENPP2) enriched on one spectrum, and epithelial/metastatic and inflammatory drivers (SPDEF, CREB3L4, IER3, LY6E, HMGB3, S100A14, FXYD3, S100A10) defining the opposing axis.
 
-![Aggregated Interactions Count](figures/01_Preprocessing_and_Clustering/05_PCA_Top_Genes_Heatmap.png)
+![Aggregated Interactions Count](figures/01_Preprocessing_and_Clustering/04_PCA_Cells_Scatter_Plot.png)
 
-Figure x. PCA scatter plot showing single cells projected onto PC_1 and PC_2, colored by sample origin.   (B) Heatmap displaying the top driving genes along PC_1, separating CNS/oligodendrocyte markers (PLP1, MOG) from metastatic/inflammatory markers (SPDEF, S100A14).   
-Inspection of the elbow plot confirmed that the top 30 principal components accounted for the majority of transcriptomic variance within the dataset.
+Figure 2. PCA scatter plot showing single cells projected onto PC_1 and PC_2, colored by sample origin.  
 
 ![Aggregated Interactions Count](figures/01_Preprocessing_and_Clustering/06_PCA_Elbow_Plot.png)
 
-Figure x. Heatmap displaying the top driving genes along PC_1, separating CNS/oligodendrocyte markers (PLP1, MOG) from metastatic/inflammatory markers (SPDEF, S100A14).   
+Figure 3. Elbow plot of principal components. Standard deviations of the top principal components derived from highly variable genes. Inspection of the elbow plot confirmed that the top 30 principal components accounted for the majority of transcriptomic variance within the dataset.
+
+![ElbowPlot](figures/01_Preprocessing_and_Clustering/05_PCA_Top_Genes_Heatmap.png)
+
+Figure 4. Heatmap displaying the top driving genes along PC_1.
+
+![](figures/01_Preprocessing_and_Clustering/03_PCA_Gene_Loadings_Plot.png)
+
+Figure 5. Top gene loadings for principal components 1 and 2.
 
 #### Harmony Integration, Clustering, and Visualization (UMAP and t-SNE)
 Unsupervised clustering across the dataset identified 16 distinct transcriptomic clusters (Clusters 0–15). Prior to integration, uncorrected UMAP embedding exhibited pronounced batch-driven separation, with individual clusters composed almost exclusively of single samples (e.g., BRBMET2, BRBMET87, and LUBMET7 segregating into isolated islands). Application of Harmony batch correction successfully mitigated sample-specific variation, driving multi-sample alignment across central shared clusters while preserving true biological heterogeneity. Both post-Harmony UMAP and t-SNE projections demonstrated consistent spatial topology, effectively grouping homologous cell states across diverse patient origins.
