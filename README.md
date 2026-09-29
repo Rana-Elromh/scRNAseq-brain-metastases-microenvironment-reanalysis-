@@ -1,4 +1,4 @@
-# Title: Uncovering Intercellular Communication Pathways Between Fibroblast and Myeloid Subclusters
+# Uncovering Intercellular Communication Pathways Between Fibroblast and Myeloid Subclusters
 
 ## Project Description
 Brain metastases represent a major clinical challenge characterized by a highly specialized tumor microenvironment (TME). To dissect the cellular architecture and intercellular cross-talk within this niche, this project presents a single-cell RNA sequencing (scRNA-seq) **re-analysis** of the human brain metastatic microenvironment. By integrating high-resolution single-cell transcriptomics with ligand-receptor network modeling, we systematically map the heterogeneous cell states and signaling crosstalk between specific tumor-associated fibroblast (TAF) cluster and M1 macrophage populations. Unraveling these specialized intercellular communication pathways provides critical insights into TME remodeling, offering prospective targets for therapeutic intervention and microenvironment-directed strategies.
@@ -340,13 +340,13 @@ Two points need care when reading these terms. First, the Reactome term "Interle
 
 Two differences from Song et al. should be noted. They treated myeloid cells as one population and inferred M1 activation from cytokine expression, while we scored individual cells and split them into M1-like, M2-like and intermediate states. In addition, they list TGFB1 among M1 hallmark genes, whereas we included TGFB1 in the M2 gene set; marker definitions for M1/M2 differ between studies.
 
-#### 6. Does the evidence support the hypothesis?
+#### 3. Does the evidence support the hypothesis?
 
 - **Supported:** fibroblasts are a matrix-remodeling, ligand-rich population (Prediction 1), and M1-like macrophages have a TLR/NF-κB-driven cytokine/chemokine program (Prediction 2).
 - **Partly supported:** a distinct set of fibroblast interactions is associated with M1-like cells (SDC4- and PTGER4-based), and one of them (PGE2-EP4) is potentially immunoregulatory.
 - **Not supported (yet):** the claim that fibroblasts *drive or reshape* the M1 state. The M1-restricted interactions were weak, the strong ones were shared with M2-like cells, and the M1 program is explained well by intrinsic TLR/NF-κB activity.
 
-#### 7. Limitations
+#### 4. Limitations
 
 1. **Small dataset.** Five patients (three breast, two lung, all female) and a myeloid compartment of limited size. Rare states, and the M1-like macrophage group in particular, contain few cells, and the number of significant DEGs for M1-like versus M2-like macrophages was small, which limits pathway enrichment power.
 2. **Weak predicted interactions.** The M1-restricted interactions had low communication probabilities, so they cannot be taken as evidence that fibroblasts reshape M1 macrophages. A low CellChat score is a low-confidence prediction, not proof of unimportance, but it should not be over-interpreted.
