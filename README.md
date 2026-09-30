@@ -1,11 +1,11 @@
 # Mapping Brain Metastases Intercellular Communication Pathways Between Fibroblast and Myeloid Subclusters Using Single-Cell RNA Sequencing
 
 ### Group project by:
-*Abdulrahman Alaa*	      [https://github.com/abdul-rahman-alaa] (https://github.com/abdul-rahman-alaa)
-*Fayza Khaled*	          [][https://github.com/fayzakhaled396-creator]
-*Jasmine Mohamed*        [][https://github.com/jasminemohamed-bio]
-*Rana Mohamed*           [][https://github.com/Rana-Elromh]
-*Mostafa Hassanein*	     [][https://github.com/mostafahassaneinn]
+*Abdulrahman Alaa*	      [https://github.com/abdul-rahman-alaa] **|**
+*Fayza Khaled*	          [https://github.com/fayzakhaled396-creator] **|**
+*Jasmine Mohamed*        [https://github.com/jasminemohamed-bio] **|**
+*Rana Mohamed*           [https://github.com/Rana-Elromh] **|**
+*Mostafa Hassanein*	     [https://github.com/mostafahassaneinn] **|**
  
 
 ## Project Description
@@ -370,13 +370,13 @@ Two differences from Song et al. should be noted. They treated myeloid cells as 
 
 #### 4. Limitations
 
-1. **Small dataset.** Five patients (three breast, two lung, all female) and a myeloid compartment of limited size. Rare states, and the M1-like macrophage group in particular, contain few cells, and the number of significant DEGs for M1-like versus M2-like macrophages was small, which limits pathway enrichment power.
+1. **Limited dataset size.** Five patients (three breast, two lung, all female) and a myeloid compartment of limited size. Rare states, and the M1-like macrophage group in particular, contain few cells, and the number of significant DEGs for M1-like versus M2-like macrophages was small, which limits pathway enrichment power.
 2. **Weak predicted interactions.** The M1-restricted interactions had low communication probabilities, so they cannot be taken as evidence that fibroblasts reshape M1 macrophages. A low CellChat score is a low-confidence prediction, not proof of unimportance, but it should not be over-interpreted.
 3. **Restricted cell-type set.** CellChat was run on only five populations, with fibroblasts as the only sender. Other cell types that could shape M1 polarization (tumor cells, T/NK cells producing IFN-γ, endothelial cells, other myeloid cells, oligodendrocytes, B/plasma cells) were not included, so we cannot say whether fibroblasts are stronger or weaker inducers than these senders.
 4. **Direction not tested.** Song et al. propose that M1-activated myeloid cells induce collagen expression in fibroblasts. We analysed fibroblast-to-myeloid signals only, so the reverse direction remains untested.
 5. **Prediction, not measurement.** CellChat and decoupleR infer communication and TF activity from mRNA. There is no protein, spatial or functional validation, and large insoluble ligands such as collagens are poorly represented by expression-based scores.
 6. **Definition of M1-like/M2-like.** The classification uses a small marker set with an arbitrary threshold (±0.1). Several M1 genes (TNF, IL1B, HLA-DRA) are also used to define the states, so part of the DEG and pathway result is expected by construction, and 85.4% of microglia are called M1-like, which suggests that the score partly reflects baseline microglial expression. The M1/M2 dichotomy is also a simplification, since macrophages in tumors occupy a continuum. The macrophage_MMP9_high_mito subcluster was merged with macrophages and may include stressed cells.
-7. **Statistics.** Wilcoxon tests treat cells as independent replicates, which can inflate significance because cells from the same patient are correlated. Sample-aware (pseudobulk) testing would be more conservative.
+7. **Data dependency.** Wilcoxon tests treat cells as independent replicates, which can inflate significance because cells from the same patient are correlated. Sample-aware (pseudobulk) testing would be more conservative.
 
 #### Conclusion
 
