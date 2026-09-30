@@ -1,5 +1,5 @@
 #
-# Title: Uncovering Intercellular Communication Pathways Between Fibroblast and Myeloid Subclusters
+# Title:Mapping Brain Metastases Intercellular Communication Pathways Between Fibroblast and Myeloid Subclusters Using Single-Cell RNA Sequencing
 # Sub_Title: "Data Loading, Quality Control, Clustering and Sub-clustering"
 # Author: "Jasmine and Fayza"
 # Date: "2026-08-30"
@@ -36,7 +36,7 @@
 # 1. Load packages
 # =========================================================
 # List of CRAN/Bioconductor packages
-cran_pkgs <- c("Seurat", "dplyr", "scDblFinder", "ggplot2", "SingleCellExperiment", "harmony")
+cran_pkgs <- c("Seurat", "dplyr", "scDblFinder", "ggplot2", "SingleCellExperiment", "harmony", "here")
 
 # Check, install missing *CRAN* packages, and load
 for (pkg in cran_pkgs) {
@@ -48,6 +48,9 @@ for (pkg in cran_pkgs) {
 
 set.seed(42)
 
+# **change the directory according to your "data" folder after downloading the data
+data_dir <- here("data")
+
 # =========================================================
 # 2. Define samples and data directory
 # =========================================================
@@ -58,9 +61,6 @@ samples <- list(
   LUBMET7  = "GSM7475327_LUBMET7",
   LUBMET1  = "GSM7475328_LUBMET1"
 )
-
-# **change the directory according to your folder after downloading the data
-data_dir <-  "C:/Users/bytee/scRNAseq-brain-metastases-microenvironment-reanalysis-/data/"
 
 # =========================================================
 # 3. Load the 5 samples

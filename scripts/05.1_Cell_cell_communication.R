@@ -1,5 +1,5 @@
 #
-# Title: Uncovering Intercellular Communication Pathways Between Fibroblast and Myeloid Subclusters
+# Title: Mapping Brain Metastases Intercellular Communication Pathways Between Fibroblast and Myeloid Subclusters Using Single-Cell RNA Sequencing
 # Sub-Title: "Cell-cell communication for Brain metastases microenvironment"
 # Author: "Mostafa Hassanein"
 # Date: "2026-09-27"

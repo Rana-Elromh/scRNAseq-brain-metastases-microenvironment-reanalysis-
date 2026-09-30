@@ -1,5 +1,5 @@
 #
-# Title: Uncovering Intercellular Communication Pathways Between Fibroblast and Myeloid Subclusters
+# Title: Mapping Brain Metastases Intercellular Communication Pathways Between Fibroblast and Myeloid Subclusters Using Single-Cell RNA Sequencing
 # Sub-Title: "DownStream Analysis (Differential expression analysis, Gene Ontology, KEGG, and REACTOME)"
 # Author: "Rana"
 # Date: "2026-09-20"

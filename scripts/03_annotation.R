@@ -1,5 +1,5 @@
 #
-# Title: Uncovering Intercellular Communication Pathways Between Fibroblast and Myeloid Subclusters
+# Title: Mapping Brain Metastases Intercellular Communication Pathways Between Fibroblast and Myeloid Subclusters Using Single-Cell RNA Sequencing
 # Sub_Title: "Annotation of clusters and sub-clusters"
 # Author: "AbdelRahman"
 # Date: "2026-09-13"
