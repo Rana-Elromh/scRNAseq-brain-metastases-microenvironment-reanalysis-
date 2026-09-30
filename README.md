@@ -1,4 +1,12 @@
-# *Uncovering Intercellular Communication Pathways Between Fibroblast and Myeloid Subclusters*
+# Mapping Brain Metastases Intercellular Communication Pathways Between Fibroblast and Myeloid Subclusters Using Single-Cell RNA Sequencing
+
+### Group project by:
+*Abdulrahman Alaa*	      [][https://github.com/abdul-rahman-alaa] 
+*Fayza Khaled*	          [][https://github.com/fayzakhaled396-creator]
+*Jasmine Mohamed*        [][https://github.com/jasminemohamed-bio]
+*Rana Mohamed*           [][https://github.com/Rana-Elromh]
+*Mostafa Hassanein*	     [][https://github.com/mostafahassaneinn]
+ 
 
 ## Project Description
 Brain metastases represent a major clinical challenge characterized by a highly specialized tumor microenvironment (TME). To dissect the cellular architecture and intercellular cross-talk within this niche, this project presents a single-cell RNA sequencing (scRNA-seq) **re-analysis** of the human brain metastatic microenvironment. By integrating high-resolution single-cell transcriptomics with ligand-receptor network modeling, we systematically map the heterogeneous cell states and signaling crosstalk between specific tumor-associated fibroblast (TAF) cluster and M1 macrophage populations. Unraveling these specialized intercellular communication pathways provides critical insights into TME remodeling, offering prospective targets for therapeutic intervention and microenvironment-directed strategies.
@@ -9,8 +17,14 @@ Brain metastases affect approximately 200,000 patients annually in the US, occur
 ### Rationale
 We hypothesized that tumor-associated fibroblasts (TAFs) drives immunosuppressive and structural remodeling of the brain metastatic microenvironment by engaging in distinct ligand-receptor signaling crosstalk with M1 macrophage populations. We reasoned that high-resolution single-cell re-analysis and intercellular network modeling would resolve these specific communication axes, demonstrating that targeting this TAF–macrophage signaling circuit can disrupt pro-tumoral TME remodeling and reveal novel therapeutic vulnerabilities in human brain metastases.
 
-### Input Data
-Single-cell RNA-seq data is available in the NCBI Gene expression Omnibus database (GEO) with accession number GSE234832.
+### Data Availability & Reference
+The single-cell RNA-seq data used in this reanalysis is available in the NCBI Gene Expression Omnibus (GEO) database under accession number **[GSE234832](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE234832)**.
+
+If you use this data, please cite the original study:
+> Song Q, Ruiz J, Xing F, Lo HW et al. (2023). **Single-cell sequencing reveals the landscape of the human brain metastatic microenvironment.** *Commun Biol* 6, 760. 
+> DOI: [10.1038/s42003-023-05124-2](https://www.nature.com/articles/s42003-023-05124-2) | PMID: [37479733](https://pubmed.ncbi.nlm.nih.gov/37479733/)
+
+### Dataset Description
 Data from five brain metastasis samples were loaded and processed using Seurat. The dataset included three breast cancer brain metastasis samples and two lung cancer brain metastasis samples.
 The samples were identified as:
 •	BRBMET2
@@ -21,6 +35,11 @@ The samples were identified as:
 The expression matrices, feature annotations, and cell barcodes were loaded for each sample and converted into Seurat objects for downstream analysis.
 
 ### Methods
+##### Summary
+*Preprocessing & Integration*: Single-cell RNA-seq data from five samples underwent quality control using adaptive MAD thresholds, doublet removal via scDblFinder, log-normalization, feature scaling, and Harmony batch integration.
+*Clustering & Cell Annotation*: Unsupervised clustering and UMAP/t-SNE visualization were performed. Cell types were annotated using SingleR and canonical markers, with a primary focus on isolating and sub-clustering the myeloid population.
+*Polarization & Enrichment Analysis*: Myeloid cells were evaluated for M1-like (pro-inflammatory) and M2-like (immunosuppressive) functional states using module scoring. Differentially expressed genes and functional pathway enrichments (GO, KEGG, Reactome) were analyzed across clusters and polarization states.
+*Cell-Cell Communication*: The CellChat framework modeled ligand-receptor interactions to map microenvironmental crosstalk, specifically evaluating communication pathways between fibroblasts and M1/M2-polarized myeloid sub-clusters.
 
 #### Data Loading
 The five samples (BRBMET2, BRBMET3, BRBMET87, LUBMET7, and LUBMET1) were read from sparse matrix format (matrix.mtx.gz, features.tsv.gz, and barcodes.tsv.gz) using the ReadMtx function in Seurat. Individual Seurat objects were constructed for each sample without initial threshold filtering (min.cells = 0, min.features = 0).
@@ -336,9 +355,10 @@ Two points need care when reading these terms. First, the Reactome term "Interle
 
 #### 2. Agreement with the original article (Song et al.) and what is novel:
 
+**Table 1.** Comparison of findings: Agreement with Song et al. and our novel discoveries.
+
 ![ ](figures/Agreement%20with%20Song%20et%20al.%20and%20what%20is%20new.png)
 
-**Table 1.** Comparison of findings: Agreement with Song et al. and our novel discoveries.
 
 Two differences from Song et al. should be noted. They treated myeloid cells as one population and inferred M1 activation from cytokine expression, while we scored individual cells and split them into M1-like, M2-like and intermediate states. In addition, they list TGFB1 among M1 hallmark genes, whereas we included TGFB1 in the M2 gene set; marker definitions for M1/M2 differ between studies.
 
