@@ -1,7 +1,7 @@
 # Mapping Brain Metastases Intercellular Communication Pathways Between Fibroblast and Myeloid Subclusters Using Single-Cell RNA Sequencing
 
 ### Group project by:
-*Abdulrahman Alaa*	      [][https://github.com/abdul-rahman-alaa] 
+*Abdulrahman Alaa*	      [https://github.com/abdul-rahman-alaa] (https://github.com/abdul-rahman-alaa)
 *Fayza Khaled*	          [][https://github.com/fayzakhaled396-creator]
 *Jasmine Mohamed*        [][https://github.com/jasminemohamed-bio]
 *Rana Mohamed*           [][https://github.com/Rana-Elromh]
