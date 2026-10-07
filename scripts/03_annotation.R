@@ -80,7 +80,7 @@ write.csv(top_markers_merged, "top_markers_merged.csv", row.names = FALSE)
 
 
 cluster_labels <- c(
-  "0"  = "Myloid",
+  "0"  = "Myeloid",
   "1"  = "Tumor_basal_like",
   "2"  = "Tumor_luminal_progenitor_like",
   "3"  = "Tumor_proliferating",
